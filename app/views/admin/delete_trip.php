@@ -1,0 +1,1 @@
+<!-- ...existing content from admin/delete_trip.html... -->

@@ -1,0 +1,2 @@
+<?php
+// Database core placeholder

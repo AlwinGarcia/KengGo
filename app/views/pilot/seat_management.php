@@ -1,0 +1,1 @@
+<!-- ...existing content from pilot/seat_management.html... -->

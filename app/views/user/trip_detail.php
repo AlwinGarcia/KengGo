@@ -1,0 +1,1 @@
+<!-- User trip detail view placeholder -->

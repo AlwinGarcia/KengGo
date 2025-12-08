@@ -1,0 +1,2 @@
+<?php
+// Pilot controller placeholder

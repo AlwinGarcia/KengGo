@@ -1,0 +1,1 @@
+<!-- ...existing content from admin/add_trip.html... -->

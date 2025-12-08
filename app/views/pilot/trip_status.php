@@ -1,0 +1,1 @@
+<!-- ...existing content from pilot/trip_status.html... -->

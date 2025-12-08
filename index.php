@@ -1,0 +1,3 @@
+<?php
+// Entry point, routes to controllers
+// ...existing content from index.html or main entry file...

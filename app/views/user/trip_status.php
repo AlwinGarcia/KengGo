@@ -1,0 +1,1 @@
+<!-- ...existing content from user/trip_status.html... -->

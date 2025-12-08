@@ -1,0 +1,1 @@
+<!-- ...existing content from user/seat_management.html... -->
