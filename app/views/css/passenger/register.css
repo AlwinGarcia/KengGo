@@ -1,0 +1,96 @@
+body {
+    background: #222;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+.register-container {
+    max-width: 400px;
+    margin: 0 auto;
+    background: #ffe082;
+    color: #222;
+    min-height: 100vh;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+@media (min-width: 700px) {
+    .register-container {
+        max-width: 700px;
+        margin: 32px auto;
+        border-radius: 24px;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+    }
+    .register-form {
+        max-width: 480px;
+    }
+}
+.register-title {
+    font-size: 2em;
+    font-weight: 700;
+    color: #2d4ed6;
+    margin-top: 48px;
+    margin-bottom: 8px;
+    text-align: center;
+}
+.register-desc {
+    font-size: 1em;
+    color: #222;
+    margin-bottom: 32px;
+    text-align: center;
+}
+.register-form {
+    width: 100%;
+    max-width: 340px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+.register-form input {
+    padding: 14px 12px;
+    border-radius: 8px;
+    border: none;
+    font-size: 1.1em;
+    background: #f5f7ff;
+    color: #222;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    outline: none;
+    border: 2px solid #e0c366;
+    transition: border 0.2s;
+}
+.register-form input:focus {
+    border: 2px solid #2d4ed6;
+}
+.register-form .register-btn {
+    background: #2d4ed6;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 14px 0;
+    font-size: 1.2em;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(45,78,214,0.18);
+    margin-top: 8px;
+    transition: background 0.2s;
+}
+.register-form .register-btn:hover {
+    background: #1a2a6c;
+}
+.register-form .register-link {
+    background: #fff;
+    color: #222;
+    border-radius: 8px;
+    padding: 12px 0;
+    font-size: 1em;
+    text-align: center;
+    margin-top: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    text-decoration: none;
+    display: block;
+}
+.register-form .register-link:hover {
+    color: #2d4ed6;
+}

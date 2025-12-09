@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seat Management</title>
+    <link rel="stylesheet" href="../css/passenger/seat_management.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        // Simple seat selection logic
+        function toggleSeat(btn) {
+            btn.classList.toggle('selected');
+        }
+    </script>
+</head>
+<body>
+    <div class="seat-container">
+        <div class="seat-header">
+            <span class="back"><i class="fa-solid fa-arrow-left"></i></span>
+            <span>Seat Management</span>
+        </div>
+        <div class="seat-title">Select your seat</div>
+        <div class="seat-grid">
+            <button class="seat-btn" onclick="toggleSeat(this)">1</button>
+            <button class="seat-btn" onclick="toggleSeat(this)">2</button>
+            <button class="seat-btn" onclick="toggleSeat(this)">3</button>
+            <button class="seat-btn" onclick="toggleSeat(this)">4</button>
+            <button class="seat-btn" onclick="toggleSeat(this)">5</button>
+            <button class="seat-btn" onclick="toggleSeat(this)">6</button>
+            <button class="seat-btn" onclick="toggleSeat(this)">7</button>
+            <button class="seat-btn" onclick="toggleSeat(this)">8</button>
+            <button class="seat-btn" onclick="toggleSeat(this)">9</button>
+            <button class="seat-btn" onclick="toggleSeat(this)">10</button>
+            <button class="seat-btn" onclick="toggleSeat(this)">11</button>
+            <button class="seat-btn" onclick="toggleSeat(this)">12</button>
+        </div>
+        <div class="seat-actions">
+            <button type="button">Confirm</button>
+            <button type="button">Cancel</button>
+        </div>
+        <div class="bottom-nav">
+            <span class="nav-icon"><i class="fa-solid fa-house"></i></span>
+            <span class="nav-icon"><i class="fa-regular fa-location-dot"></i></span>
+            <span class="nav-icon"><i class="fa-solid fa-clipboard-list"></i></span>
+            <span class="nav-icon"><i class="fa-solid fa-user"></i></span>
+            <span class="nav-icon"><i class="fa-solid fa-gear"></i></span>
+        </div>
+    </div>
+</body>
+</html>
