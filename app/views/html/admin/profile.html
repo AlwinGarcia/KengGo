@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Driver Profile — KengGo Shuttle</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- main shared stylesheet -->
+    <link rel="stylesheet" href="../../../../../../Desktop/KengGo/css/admincss/style.css" />
+    <!-- profile-specific stylesheet (place alongside this file) -->
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body class="dashboard-page profile-page">
+<main class="dashboard-shell">
+
+    <!-- status bar -->
+    <div class="dashboard-topbar">
+        <span class="status-time">9:41</span>
+        <span class="status-icons">📶 🔋</span>
+    </div>
+
+    <!-- header -->
+    <section class="dashboard-header">
+        <div class="avatar">🟩</div>
+        <div class="greeting">
+            <div class="greeting-line">Hey, <strong>Gideon</strong></div>
+        </div>
+        <button class="icon-btn bell">🔔</button>
+    </section>
+
+    <!-- Profile Card -->
+    <section class="profile-card" aria-label="Driver profile">
+        <div class="profile-top">
+            <div class="profile-avatar">👨‍✈️</div>
+            <div class="profile-meta">
+                <h1 class="profile-name">Gideon Santos</h1>
+                <div class="profile-role">Driver</div>
+                <div class="profile-status">
+                    <span class="status-pill status-active">Active</span>
+                    <span class="profile-id">ID: D-00123</span>
+                </div>
+            </div>
+
+            <div class="profile-actions">
+                <button class="btn small edit-btn" title="Edit profile">Edit</button>
+                <button class="btn small danger delete-btn" title="Delete driver">Delete</button>
+            </div>
+        </div>
+
+        <div class="profile-body">
+            <div class="profile-section">
+                <h3>Contact</h3>
+                <div class="info-row">
+                    <div class="info-label">Phone</div>
+                    <div class="info-value">+63 912 345 6789</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Email</div>
+                    <div class="info-value">gideon.santos@example.com</div>
+                </div>
+            </div>
+
+            <div class="profile-section">
+                <h3>Vehicle</h3>
+                <div class="info-row">
+                    <div class="info-label">Vehicle</div>
+                    <div class="info-value">Shuttle 01 — Toyota HiAce</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Plate</div>
+                    <div class="info-value">ABC-1234</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Seats</div>
+                    <div class="info-value">20</div>
+                </div>
+            </div>
+
+            <div class="profile-section">
+                <h3>Documents</h3>
+                <div class="info-row">
+                    <div class="info-label">Driver License</div>
+                    <div class="info-value">DL-987654 (Expires: 2026-03-15)</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Insurance</div>
+                    <div class="info-value">Valid (Expires: 2026-09-30)</div>
+                </div>
+            </div>
+
+            <div class="profile-section">
+                <h3>Recent Trips</h3>
+                <div class="trips-grid">
+                    <article class="trip-mini">
+                        <div class="trip-icon">🚌</div>
+                        <div class="trip-info">
+                            <div class="trip-title">Shuttle 01</div>
+                            <div class="trip-meta">72-74 Oxford St. → 20 Grosvenor Sq.</div>
+                        </div>
+                        <div class="trip-price">₱100</div>
+                    </article>
+
+                    <article class="trip-mini">
+                        <div class="trip-icon">🚌</div>
+                        <div class="trip-info">
+                            <div class="trip-title">Shuttle 23</div>
+                            <div class="trip-meta">Great Portland St. → Baker Street</div>
+                        </div>
+                        <div class="trip-price">₱100</div>
+                    </article>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- bottom navigation -->
+    <nav class="bottom-nav">
+        <button class="nav-item">♡</button>
+        <button class="nav-item">📍</button>
+        <button class="nav-item nav-item--active">🏠</button>
+        <button class="nav-item">👤</button>
+        <button class="nav-item">⚙️</button>
+    </nav>
+
+</main>
+</body>
+</html>
