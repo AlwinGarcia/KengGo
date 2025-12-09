@@ -7,9 +7,7 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <!-- main shared stylesheet -->
-    <link rel="stylesheet" href="../../../../../../Desktop/KengGo/css/admincss/style.css" />
-    <!-- profile-specific stylesheet (place alongside this file) -->
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="../css/style.css" />
 </head>
 
 <body class="dashboard-page profile-page">
@@ -27,7 +25,7 @@
         <div class="greeting">
             <div class="greeting-line">Hey, <strong>Gideon</strong></div>
         </div>
-        <button class="icon-btn bell">🔔</button>
+        <button class="icon-btn bell" aria-label="Notifications">🔔</button>
     </section>
 
     <!-- Profile Card -->
@@ -44,8 +42,8 @@
             </div>
 
             <div class="profile-actions">
-                <button class="btn small edit-btn" title="Edit profile">Edit</button>
-                <button class="btn small danger delete-btn" title="Delete driver">Delete</button>
+                <button class="btn small edit-btn" title="Edit profile" onclick="editProfile()">Edit</button>
+                <button class="btn small delete-btn" title="Delete driver" onclick="deleteProfile()">Delete</button>
             </div>
         </div>
 
@@ -116,15 +114,92 @@
         </div>
     </section>
 
+    <!-- Toast notification -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Confirm Modal -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal">
+            <h3 id="modalTitle">Delete Driver</h3>
+            <p id="confirmMessage">Are you sure you want to delete this driver profile?</p>
+            <div class="modal-actions">
+                <button class="modal-actions btn-cancel" onclick="closeConfirmModal()">Cancel</button>
+                <button class="modal-actions btn-confirm" id="confirmBtn" onclick="confirmAction()">Confirm</button>
+            </div>
+        </div>
+    </div>
+
     <!-- bottom navigation -->
-    <nav class="bottom-nav">
-        <button class="nav-item">♡</button>
-        <button class="nav-item">📍</button>
-        <button class="nav-item nav-item--active">🏠</button>
-        <button class="nav-item">👤</button>
-        <button class="nav-item">⚙️</button>
+    <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
+        <button class="nav-item" onclick="navToPage('dashboard.html')" aria-label="Dashboard">🏠</button>
+        <button class="nav-item" onclick="navToPage('add.html')" aria-label="Add">➕</button>
+        <button class="nav-item nav-item--active" onclick="navToPage('profile.html')" aria-label="Profile">👤</button>
+        <button class="nav-item" onclick="navToPage('notifications.html')" aria-label="Notifications">🔔</button>
+        <button class="nav-item" onclick="navToPage('trip_status.html')" aria-label="Status">📊</button>
     </nav>
 
 </main>
-</body>
-</html>
+
+<script>
+    let pendingAction = null;
+
+    // Toast notification helper
+    function showToast(message, type = 'info', duration = 3000) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.className = `toast show ${type}`;
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, duration);
+    }
+
+    // Edit profile
+    function editProfile() {
+        showToast('Edit functionality coming soon...', 'info');
+    }
+
+    // Delete profile
+    function deleteProfile() {
+        pendingAction = 'delete';
+        document.getElementById('modalTitle').textContent = 'Delete Driver';
+        document.getElementById('confirmMessage').textContent = 'Are you sure you want to delete this driver profile? This action cannot be undone.';
+        document.getElementById('confirmBtn').style.background = '#ef4444';
+        document.getElementById('confirmModal').classList.add('show');
+    }
+
+    // Confirm action
+    function confirmAction() {
+        if (pendingAction === 'delete') {
+            const confirmBtn = document.getElementById('confirmBtn');
+            confirmBtn.classList.add('loading');
+            confirmBtn.disabled = true;
+
+            setTimeout(() => {
+                confirmBtn.classList.remove('loading');
+                confirmBtn.disabled = false;
+                closeConfirmModal();
+                showToast('Driver profile deleted successfully!', 'success');
+                
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1500);
+            }, 1500);
+        }
+    }
+
+    function closeConfirmModal() {
+        document.getElementById('confirmModal').classList.remove('show');
+    }
+
+    // Navigation
+    function navToPage(page) {
+        window.location.href = page;
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('confirmModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeConfirmModal();
+        }
+    });
+</script>

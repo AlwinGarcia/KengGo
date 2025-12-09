@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Seat Management — KengGo Shuttle</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css" />
+</head>
+
+<body class="dashboard-page">
+<main class="dashboard-shell">
+
+    <!-- status bar -->
+    <div class="dashboard-topbar">
+        <div class="top-left">
+            <span class="status-time">9:41</span>
+        </div>
+        <div class="top-right">
+            <span class="status-icons">📶 🔋</span>
+        </div>
+    </div>
+
+    <!-- header -->
+    <section class="dashboard-header">
+        <div class="avatar">�</div>
+        <div class="greeting">
+            <div class="greeting-line">Hey, <strong>Admin</strong></div>
+        </div>
+        <button class="icon-btn bell" aria-label="Notifications">🔔</button>
+    </section>
+
+    <!-- page title -->
+    <section style="padding: 12px;">
+        <h2 style="margin: 0 0 12px 0; font-size: 20px; color: var(--dark);">Seat Management</h2>
+        <p style="margin: 0; font-size: 13px; color: var(--gray);">Manage seat availability for all trips</p>
+    </section>
+
+    <!-- seat management content area -->
+    <section style="padding: 0 12px 20px;">
+        <div class="trips-grid">
+            <article class="trip-card" onclick="manageSeat('Shuttle 01')">
+                <div class="trip-card-top">
+                    <div class="icon">🚌</div>
+                    <div class="trip-title">Shuttle 01</div>
+                    <div class="status-dot"></div>
+                </div>
+                <div class="trip-body">
+                    <div class="route">
+                        <div class="from">↙ Available: 5/20</div>
+                        <div class="to">↗ Booked: 15 seats</div>
+                    </div>
+                </div>
+            </article>
+
+            <article class="trip-card" onclick="manageSeat('Shuttle 23')">
+                <div class="trip-card-top">
+                    <div class="icon">🚌</div>
+                    <div class="trip-title">Shuttle 23</div>
+                    <div class="status-dot"></div>
+                </div>
+                <div class="trip-body">
+                    <div class="route">
+                        <div class="from">↙ Available: 12/20</div>
+                        <div class="to">↗ Booked: 8 seats</div>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <!-- Toast notification -->
+    <div class="toast" id="toast"></div>
+
+    <!-- bottom navigation bar -->
+    <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
+        <button class="nav-item" onclick="navToPage('dashboard.html')" aria-label="Dashboard">🏠</button>
+        <button class="nav-item" onclick="navToPage('add.html')" aria-label="Add">➕</button>
+        <button class="nav-item" onclick="navToPage('profile.html')" aria-label="Profile">👤</button>
+        <button class="nav-item" onclick="navToPage('notifications.html')" aria-label="Notifications">🔔</button>
+        <button class="nav-item nav-item--active" onclick="navToPage('trip_status.html')" aria-label="Status">📊</button>
+    </nav>
+
+</main>
+
+<script>
+    // Toast notification helper
+    function showToast(message, type = 'info', duration = 3000) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.className = `toast show ${type}`;
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, duration);
+    }
+
+    // Manage seat
+    function manageSeat(shuttle) {
+        showToast(`Managing seats for ${shuttle}...`, 'info');
+    }
+
+    // Navigation
+    function navToPage(page) {
+        window.location.href = page;
+    }
+</script>

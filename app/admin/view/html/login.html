@@ -6,9 +6,7 @@
     <title>Login Admin</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-
-
-    <link rel="stylesheet" href="../../../../../../Desktop/KengGo/css/admincss/style.css">
+    <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
 <main class="page-bg">
@@ -19,20 +17,106 @@
             <p class="subtle">The Fastest SHUTTLE<br><span>Service in Bakakeng</span></p>
         </header>
 
-        <form class="login-form" action="#" method="post" novalidate>
+        <form class="login-form" id="loginForm" novalidate>
             <input id="email" name="email" type="email" placeholder="Email" required>
             <input id="password" name="password" type="password" placeholder="Password" required>
             <input id="adminId" name="adminId" type="text" placeholder="Unique Admin ID">
 
             <div class="forgot-row">
-                <a class="forgot-link" href="#">Forgot your password?</a>
+                <a class="forgot-link" href="#" onclick="showForgotPassword(event)">Forgot your password?</a>
             </div>
 
-            <button class="btn primary" type="submit">Sign in</button>
-            <button class="btn secondary" type="button">Create new account</button>
+            <button class="btn primary" type="submit" id="loginBtn">Sign in</button>
+            <button class="btn secondary" type="button" onclick="goToRegister()">Create new account</button>
         </form>
     </div>
 
+    <!-- Toast notification -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Modal for forgot password -->
+    <div class="modal-overlay" id="forgotModal">
+        <div class="modal">
+            <h3>Reset Password</h3>
+            <p>Enter your email to receive a password reset link</p>
+            <input type="email" placeholder="Your email" id="resetEmail" style="width: 100%; padding: 10px 12px; border: 2px solid rgba(31,65,187,0.12); border-radius: 8px; background: var(--light); outline: none;">
+            <div class="modal-actions">
+                <button class="modal-actions btn-cancel" onclick="closeForgotPassword()">Cancel</button>
+                <button class="modal-actions btn-confirm" onclick="submitPasswordReset()">Send Link</button>
+            </div>
+        </div>
+    </div>
+
 </main>
+
+<script>
+    // Toast notification helper
+    function showToast(message, type = 'info', duration = 3000) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.className = `toast show ${type}`;
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, duration);
+    }
+
+    // Login form submission
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const loginBtn = document.getElementById('loginBtn');
+        const email = document.getElementById('email').value;
+        
+        loginBtn.classList.add('loading');
+        loginBtn.disabled = true;
+
+        // Simulate API call
+        setTimeout(() => {
+            loginBtn.classList.remove('loading');
+            loginBtn.disabled = false;
+            
+            if (email && email.includes('@')) {
+                showToast('Login successful! Redirecting...', 'success');
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1500);
+            } else {
+                showToast('Invalid email format', 'error');
+            }
+        }, 1500);
+    });
+
+    // Forgot password modal
+    function showForgotPassword(e) {
+        e.preventDefault();
+        document.getElementById('forgotModal').classList.add('show');
+    }
+
+    function closeForgotPassword() {
+        document.getElementById('forgotModal').classList.remove('show');
+    }
+
+    function submitPasswordReset() {
+        const email = document.getElementById('resetEmail').value;
+        if (email && email.includes('@')) {
+            showToast('Password reset link sent to ' + email, 'success');
+            closeForgotPassword();
+            document.getElementById('resetEmail').value = '';
+        } else {
+            showToast('Please enter a valid email', 'error');
+        }
+    }
+
+    // Navigate to register
+    function goToRegister() {
+        window.location.href = 'register.html';
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('forgotModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeForgotPassword();
+        }
+    });
+</script>
 </body>
 </html>

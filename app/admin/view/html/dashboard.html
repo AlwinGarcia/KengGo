@@ -6,7 +6,7 @@
     <title>Dashboard — KengGo Shuttle</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../../../../../../Desktop/KengGo/css/admincss/style.css" />
+    <link rel="stylesheet" href="../css/style.css" />
 </head>
 <body class="dashboard-page">
 <main class="dashboard-shell">
@@ -40,7 +40,7 @@
                 <div class="id-value">1*** 9***</div>
             </div>
         </div>
-        <button class="card-more" aria-label="More options">⋯</button>
+        <button class="card-more" aria-label="More options" onclick="showWelcomeMenu(event)">⋯</button>
     </section>
 
     <!-- Trips heading -->
@@ -48,15 +48,15 @@
         <div class="trips-header">
             <h3>Trips Ongoing</h3>
             <div class="trips-actions">
-                <button class="fab small" title="trash" onclick="window.location.href='delete.html'">🗑️</button>
-                <button class="fab small" title="menu">≡</button>
+                <button class="fab small" title="Delete" onclick="window.location.href='deleteTrip.html'">🗑️</button>
+                <button class="fab small" title="Add" onclick="window.location.href='add.html'">➕</button>
             </div>
         </div>
 
         <!-- cards grid -->
         <div class="trips-grid">
             <!-- repeat shuttle card (copy/paste for visual) -->
-            <article class="trip-card">
+            <article class="trip-card" onclick="editTrip('Shuttle 01')">
                 <div class="trip-card-top">
                     <div class="icon">🚌</div>
                     <div class="trip-title">Shuttle 01</div>
@@ -76,7 +76,7 @@
                 </div>
             </article>
 
-            <article class="trip-card">
+            <article class="trip-card" onclick="editTrip('Shuttle 23')">
                 <div class="trip-card-top">
                     <div class="icon">🚌</div>
                     <div class="trip-title">Shuttle 23</div>
@@ -97,7 +97,7 @@
             </article>
 
             <!-- duplicate more cards to match layout -->
-            <article class="trip-card">
+            <article class="trip-card" onclick="editTrip('Shuttle 44')">
                 <div class="trip-card-top">
                     <div class="icon">🚌</div>
                     <div class="trip-title">Shuttle 44</div>
@@ -112,7 +112,7 @@
                 </div>
             </article>
 
-            <article class="trip-card">
+            <article class="trip-card" onclick="editTrip('Shuttle 67')">
                 <div class="trip-card-top">
                     <div class="icon">🚌</div>
                     <div class="trip-title">Shuttle 67</div>
@@ -131,15 +131,55 @@
         </div>
     </section>
 
+    <!-- Toast notification -->
+    <div class="toast" id="toast"></div>
+
     <!-- bottom navigation bar -->
     <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
-        <button class="nav-item" aria-label="Favorites">♡</button>
-        <button class="nav-item" aria-label="Map">📍</button>
-        <button class="nav-item nav-item--active" aria-label="Home">🏠</button>
-        <button class="nav-item" aria-label="Profile">👤</button>
-        <button class="nav-item" aria-label="Settings">⚙️</button>
+        <button class="nav-item nav-item--active" onclick="navToPage('dashboard.html')" aria-label="Dashboard">🏠</button>
+        <button class="nav-item" onclick="navToPage('add.html')" aria-label="Add">➕</button>
+        <button class="nav-item" onclick="navToPage('profile.html')" aria-label="Profile">👤</button>
+        <button class="nav-item" onclick="navToPage('notifications.html')" aria-label="Notifications">🔔</button>
+        <button class="nav-item" onclick="navToPage('trip_status.html')" aria-label="Status">📊</button>
     </nav>
 
 </main>
-</body>
-</html>
+
+<script>
+    // Toast notification helper
+    function showToast(message, type = 'info', duration = 3000) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.className = `toast show ${type}`;
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, duration);
+    }
+
+    // Edit trip
+    function editTrip(tripName) {
+        showToast(`Editing ${tripName}...`, 'info');
+        setTimeout(() => {
+            window.location.href = 'editTrip.html';
+        }, 800);
+    }
+
+    // Welcome menu
+    function showWelcomeMenu(e) {
+        e.preventDefault();
+        showToast('Account settings available in profile', 'info');
+        setTimeout(() => {
+            window.location.href = 'profile.html';
+        }, 800);
+    }
+
+    // Navigation
+    function navToPage(page) {
+        window.location.href = page;
+    }
+
+    // Notification bell
+    document.querySelector('.bell').addEventListener('click', function() {
+        window.location.href = 'notifications.html';
+    });
+</script>

@@ -1206,3 +1206,312 @@ html, body {
     font-size: 12px;
     color: var(--gray);
 }
+
+/* ======================================================
+   Enhanced Interactions & Animations
+   ====================================================== */
+
+/* Smooth transitions for all interactive elements */
+button, input, textarea, a {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Input focus states with glow effect */
+input:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--blue) !important;
+    box-shadow: 0 0 0 3px rgba(31, 65, 187, 0.1) !important;
+}
+
+/* Enhanced button hover states */
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.15) !important;
+}
+
+.btn:active {
+    transform: translateY(0);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.12) !important;
+}
+
+.btn.primary:hover {
+    background: linear-gradient(135deg, var(--blue) 0%, #1630a0 100%);
+}
+
+.btn.secondary:hover {
+    background: linear-gradient(135deg, var(--white) 0%, #f5f5f5 100%);
+}
+
+/* Navigation items hover effect */
+.bottom-nav .nav-item {
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.bottom-nav .nav-item:hover {
+    opacity: 1;
+    background: rgba(31, 65, 187, 0.08);
+}
+
+.bottom-nav .nav-item--active:hover {
+    box-shadow: 0 12px 28px rgba(31,65,187,0.28);
+}
+
+/* Icon buttons with ripple effect */
+.icon-btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.icon-btn:hover {
+    background: rgba(31, 65, 187, 0.1) !important;
+}
+
+.icon-btn:active {
+    background: rgba(31, 65, 187, 0.15) !important;
+}
+
+/* FAB button enhancements */
+.fab {
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.fab:hover {
+    transform: scale(1.08);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.18) !important;
+}
+
+.fab:active {
+    transform: scale(0.96);
+}
+
+.fab.small:hover {
+    box-shadow: 0 10px 24px rgba(0,0,0,0.15) !important;
+}
+
+/* Card hover effects */
+.trip-card {
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.trip-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 32px rgba(0,0,0,0.12) !important;
+}
+
+.notification-card {
+    transition: all 0.2s ease;
+}
+
+.notification-card:hover {
+    background: linear-gradient(135deg, var(--white) 0%, rgba(31, 65, 187, 0.02) 100%);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.08) !important;
+}
+
+/* Delete button danger state */
+.delete-btn:hover,
+.delete-remove:hover {
+    background: linear-gradient(135deg, #ff5a5a 0%, #e63946 100%);
+    transform: translateY(-2px);
+}
+
+.delete-remove:active,
+.delete-btn:active {
+    transform: translateY(0);
+}
+
+/* Form field animations */
+.add-field,
+.edit-field {
+    transition: all 0.2s ease;
+}
+
+.add-field:focus-within,
+.edit-field:focus-within {
+    box-shadow: 0 12px 28px rgba(31, 65, 187, 0.12) !important;
+}
+
+/* Toast notification styles */
+.toast {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%) translateY(120px);
+    background: var(--dark);
+    color: var(--white);
+    padding: 14px 20px;
+    border-radius: 10px;
+    box-shadow: 0 12px 28px rgba(0,0,0,0.2);
+    font-size: 13px;
+    font-weight: 600;
+    z-index: 50;
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+.toast.success {
+    background: #10b981;
+}
+
+.toast.error {
+    background: #ef4444;
+}
+
+.toast.warning {
+    background: var(--yellow);
+    color: var(--dark);
+}
+
+/* Modal overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 60;
+    animation: fadeIn 0.2s ease;
+}
+
+.modal-overlay.show {
+    display: flex;
+}
+
+.modal {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 24px;
+    max-width: 320px;
+    width: 90%;
+    box-shadow: 0 20px 48px rgba(0,0,0,0.25);
+    animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modal h3 {
+    margin: 0 0 12px 0;
+    color: var(--dark);
+    font-size: 18px;
+}
+
+.modal p {
+    color: var(--gray);
+    font-size: 13px;
+    margin: 0 0 16px 0;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.modal-actions button {
+    flex: 1;
+    padding: 10px 14px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.modal-actions .btn-cancel {
+    background: var(--light);
+    color: var(--dark);
+}
+
+.modal-actions .btn-confirm {
+    background: var(--blue);
+    color: var(--white);
+    box-shadow: 0 8px 16px rgba(31,65,187,0.2);
+}
+
+.modal-actions .btn-confirm:hover {
+    transform: translateY(-1px);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+/* Loading state */
+.loading::after {
+    content: "";
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid var(--white);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: translateY(-50%) rotate(360deg);
+    }
+}
+
+/* Success checkmark */
+.success::after {
+    content: "✓";
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--white);
+    font-weight: 700;
+}
+

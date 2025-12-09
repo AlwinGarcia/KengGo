@@ -6,7 +6,7 @@
     <title>Add Trip — KengGo Shuttle</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../../../../../../Desktop/KengGo/css/admincss/style.css" />
+    <link rel="stylesheet" href="../css/style.css" />
 </head>
 
 <body class="dashboard-page add-page">
@@ -24,7 +24,7 @@
         <div class="greeting">
             <div class="greeting-line">Hey, <strong>Gideon</strong></div>
         </div>
-        <button class="icon-btn bell">🔔</button>
+        <button class="icon-btn bell" aria-label="Notifications">🔔</button>
     </section>
 
     <!-- page title -->
@@ -33,7 +33,7 @@
         <center><p class="add-sub">Create a new shuttle trip. All fields marked * are required.</p></center>
     </header>
 
-    <!-- form container (no JS, pure HTML) -->
+    <!-- form container -->
     <form class="add-form" id="addTripForm" novalidate>
 
         <div class="row two-col">
@@ -116,15 +116,118 @@
         </div>
     </form>
 
+    <!-- Toast notification -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Confirm Modal -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal">
+            <h3>Confirm Trip Addition</h3>
+            <p id="confirmMessage">Are you sure you want to add this trip?</p>
+            <div class="modal-actions">
+                <button class="modal-actions btn-cancel" onclick="closeConfirmModal()">Cancel</button>
+                <button class="modal-actions btn-confirm" onclick="submitTrip()">Confirm</button>
+            </div>
+        </div>
+    </div>
+
     <!-- bottom navigation -->
-    <nav class="bottom-nav">
-        <button class="nav-item">♡</button>
-        <button class="nav-item">📍</button>
-        <button class="nav-item nav-item--active">🏠</button>
-        <button class="nav-item">👤</button>
-        <button class="nav-item">⚙️</button>
+    <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
+        <button class="nav-item" onclick="navToPage('dashboard.html')" aria-label="Dashboard">🏠</button>
+        <button class="nav-item nav-item--active" onclick="navToPage('add.html')" aria-label="Add">➕</button>
+        <button class="nav-item" onclick="navToPage('profile.html')" aria-label="Profile">👤</button>
+        <button class="nav-item" onclick="navToPage('notifications.html')" aria-label="Notifications">🔔</button>
+        <button class="nav-item" onclick="navToPage('trip_status.html')" aria-label="Status">📊</button>
     </nav>
 
 </main>
-</body>
-</html>
+
+<script>
+    // Toast notification helper
+    function showToast(message, type = 'info', duration = 3000) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.className = `toast show ${type}`;
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, duration);
+    }
+
+    let formDataToSubmit = null;
+
+    // Form submission
+    document.getElementById('addTripForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Validate required fields
+        const shuttleNumber = document.getElementById('shuttle_number').value;
+        const from = document.getElementById('from_address').value;
+        const to = document.getElementById('to_address').value;
+        const date = document.getElementById('trip_date').value;
+        const departure = document.getElementById('depart_time').value;
+        const price = document.getElementById('price').value;
+
+        if (!shuttleNumber || !from || !to || !date || !departure || !price) {
+            showToast('Please fill in all required fields', 'error');
+            return;
+        }
+
+        // Store form data and show confirmation
+        formDataToSubmit = new FormData(this);
+        document.getElementById('confirmMessage').textContent = `Are you sure you want to add Shuttle ${shuttleNumber} from ${from} to ${to}?`;
+        document.getElementById('confirmModal').classList.add('show');
+    });
+
+    function submitTrip() {
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.classList.add('loading');
+        submitBtn.disabled = true;
+
+        // Simulate API call
+        setTimeout(() => {
+            submitBtn.classList.remove('loading');
+            submitBtn.disabled = false;
+            
+            closeConfirmModal();
+            showToast('Trip added successfully!', 'success');
+            
+            // Reset form and redirect after delay
+            setTimeout(() => {
+                document.getElementById('addTripForm').reset();
+                window.location.href = 'dashboard.html';
+            }, 1500);
+        }, 1500);
+    }
+
+    function closeConfirmModal() {
+        document.getElementById('confirmModal').classList.remove('show');
+    }
+
+    // Cancel button
+    document.getElementById('cancelBtn').addEventListener('click', function() {
+        if (confirm('Are you sure you want to cancel? Any unsaved changes will be lost.')) {
+            window.location.href = 'dashboard.html';
+        }
+    });
+
+    // Navigation
+    function navToPage(page) {
+        window.location.href = page;
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('confirmModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeConfirmModal();
+        }
+    });
+
+    // Prevent form submission on Enter in inputs
+    document.querySelectorAll('.add-field input').forEach(input => {
+        input.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+            }
+        });
+    });
+</script>

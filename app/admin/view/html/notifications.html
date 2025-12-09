@@ -6,7 +6,7 @@
     <title>Notifications — KengGo Shuttle</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../../../../../../Desktop/KengGo/css/admincss/style.css" />
+    <link rel="stylesheet" href="../css/style.css" />
 </head>
 <body class="dashboard-page notifications-page">
 <main class="dashboard-shell">
@@ -23,7 +23,7 @@
         <div class="greeting">
             <div class="greeting-line">Hey, <strong>Admin</strong></div>
         </div>
-        <button class="icon-btn bell">🔔</button>
+        <button class="icon-btn bell" aria-label="Notifications">🔔</button>
     </section>
 
     <!-- page title -->
@@ -31,7 +31,7 @@
 
     <!-- notifications list -->
     <section class="notifications-list">
-        <article class="notification-card">
+        <article class="notification-card" onclick="handleNotification(event)">
             <div class="notification-icon">🔔</div>
             <div class="notification-content">
                 <div class="notification-title">Trip Updated</div>
@@ -39,7 +39,7 @@
             </div>
         </article>
 
-        <article class="notification-card">
+        <article class="notification-card" onclick="handleNotification(event)">
             <div class="notification-icon">🚌</div>
             <div class="notification-content">
                 <div class="notification-title">New Trip Added</div>
@@ -47,7 +47,7 @@
             </div>
         </article>
 
-        <article class="notification-card">
+        <article class="notification-card" onclick="handleNotification(event)">
             <div class="notification-icon">⚠️</div>
             <div class="notification-content">
                 <div class="notification-title">Trip Cancelled</div>
@@ -58,15 +58,39 @@
         <!-- add more notifications as needed -->
     </section>
 
+    <!-- Toast notification -->
+    <div class="toast" id="toast"></div>
+
     <!-- bottom navigation -->
-    <nav class="bottom-nav">
-        <button class="nav-item">♡</button>
-        <button class="nav-item">📍</button>
-        <button class="nav-item nav-item--active">🏠</button>
-        <button class="nav-item">👤</button>
-        <button class="nav-item">⚙️</button>
+    <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
+        <button class="nav-item" onclick="navToPage('dashboard.html')" aria-label="Dashboard">🏠</button>
+        <button class="nav-item" onclick="navToPage('add.html')" aria-label="Add">➕</button>
+        <button class="nav-item" onclick="navToPage('profile.html')" aria-label="Profile">👤</button>
+        <button class="nav-item nav-item--active" onclick="navToPage('notifications.html')" aria-label="Notifications">🔔</button>
+        <button class="nav-item" onclick="navToPage('trip_status.html')" aria-label="Status">📊</button>
     </nav>
 
 </main>
-</body>
-</html>
+
+<script>
+    // Toast notification helper
+    function showToast(message, type = 'info', duration = 3000) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.className = `toast show ${type}`;
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, duration);
+    }
+
+    // Handle notification click
+    function handleNotification(e) {
+        const title = e.currentTarget.querySelector('.notification-title').textContent;
+        showToast(`Opened: ${title}`, 'info');
+    }
+
+    // Navigation
+    function navToPage(page) {
+        window.location.href = page;
+    }
+</script>

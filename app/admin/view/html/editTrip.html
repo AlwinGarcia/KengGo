@@ -6,7 +6,7 @@
     <title>Edit Trip — KengGo Shuttle</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../../../../../../Desktop/KengGo/css/admincss/style.css" />
+    <link rel="stylesheet" href="../css/style.css" />
 </head>
 
 <body class="dashboard-page edit-page">
@@ -24,7 +24,7 @@
         <div class="greeting">
             <div class="greeting-line">Hey, <strong>Gideon</strong></div>
         </div>
-        <button class="icon-btn bell">🔔</button>
+        <button class="icon-btn bell" aria-label="Notifications">🔔</button>
     </section>
 
     <!-- page title / subtitle -->
@@ -111,20 +111,103 @@
         </div>
 
         <div class="form-actions">
-            <button type="reset" class="btn secondary">Cancel</button>
-            <button type="submit" class="btn edit-submit">Save Changes</button>
+            <button type="reset" class="btn secondary" id="cancelBtn">Cancel</button>
+            <button type="submit" class="btn primary" id="submitBtn" style="background: var(--yellow); color: var(--dark);">Save Changes</button>
         </div>
     </form>
 
+    <!-- Toast notification -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Confirm Modal -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal">
+            <h3>Confirm Changes</h3>
+            <p id="confirmMessage">Are you sure you want to save these changes?</p>
+            <div class="modal-actions">
+                <button class="modal-actions btn-cancel" onclick="closeConfirmModal()">Cancel</button>
+                <button class="modal-actions btn-confirm" onclick="submitChanges()">Confirm</button>
+            </div>
+        </div>
+    </div>
+
     <!-- bottom navigation -->
-    <nav class="bottom-nav">
-        <button class="nav-item">♡</button>
-        <button class="nav-item">📍</button>
-        <button class="nav-item nav-item--active">🏠</button>
-        <button class="nav-item">👤</button>
-        <button class="nav-item">⚙️</button>
+    <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
+        <button class="nav-item" onclick="navToPage('dashboard.html')" aria-label="Dashboard">🏠</button>
+        <button class="nav-item nav-item--active" onclick="navToPage('add.html')" aria-label="Add">➕</button>
+        <button class="nav-item" onclick="navToPage('profile.html')" aria-label="Profile">👤</button>
+        <button class="nav-item" onclick="navToPage('notifications.html')" aria-label="Notifications">🔔</button>
+        <button class="nav-item" onclick="navToPage('trip_status.html')" aria-label="Status">📊</button>
     </nav>
 
 </main>
-</body>
-</html>
+
+<script>
+    // Toast notification helper
+    function showToast(message, type = 'info', duration = 3000) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.className = `toast show ${type}`;
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, duration);
+    }
+
+    // Form submission
+    document.getElementById('editTripForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const shuttleNumber = document.getElementById('shuttle_number').value;
+        const from = document.getElementById('from_address').value;
+        const to = document.getElementById('to_address').value;
+
+        if (!shuttleNumber || !from || !to) {
+            showToast('Please fill in all required fields', 'error');
+            return;
+        }
+
+        document.getElementById('confirmMessage').textContent = `Save changes for ${shuttleNumber}?`;
+        document.getElementById('confirmModal').classList.add('show');
+    });
+
+    function submitChanges() {
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.classList.add('loading');
+        submitBtn.disabled = true;
+
+        setTimeout(() => {
+            submitBtn.classList.remove('loading');
+            submitBtn.disabled = false;
+            
+            closeConfirmModal();
+            showToast('Trip updated successfully!', 'success');
+            
+            setTimeout(() => {
+                window.location.href = 'dashboard.html';
+            }, 1500);
+        }, 1500);
+    }
+
+    function closeConfirmModal() {
+        document.getElementById('confirmModal').classList.remove('show');
+    }
+
+    // Cancel button
+    document.getElementById('cancelBtn').addEventListener('click', function() {
+        if (confirm('Discard changes and return to dashboard?')) {
+            window.location.href = 'dashboard.html';
+        }
+    });
+
+    // Navigation
+    function navToPage(page) {
+        window.location.href = page;
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('confirmModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeConfirmModal();
+        }
+    });
+</script>
