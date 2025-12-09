@@ -1,0 +1,122 @@
+body {
+    background: #222;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+.seat-container {
+    max-width: 400px;
+    margin: 0 auto;
+    background: #ffe082;
+    color: #222;
+    min-height: 100vh;
+    position: relative;
+}
+@media (min-width: 700px) {
+    .seat-container {
+        max-width: 700px;
+        margin: 32px auto;
+        border-radius: 24px;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+    }
+    .bottom-nav {
+        max-width: 700px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    .seat-grid {
+        gap: 32px;
+    }
+}
+.seat-header {
+    display: flex;
+    align-items: center;
+    padding: 18px 18px 8px 18px;
+    font-size: 1.3em;
+    font-weight: 600;
+    color: #2d4ed6;
+}
+.seat-header .back {
+    font-size: 1.2em;
+    color: #222;
+    margin-right: 12px;
+    cursor: pointer;
+}
+.seat-title {
+    text-align: center;
+    font-size: 1.1em;
+    font-weight: 600;
+    margin: 18px 0 10px 0;
+}
+.seat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    padding: 0 18px;
+    margin-bottom: 24px;
+}
+.seat-btn {
+    background: #fff;
+    color: #222;
+    border: 2px solid #2d4ed6;
+    border-radius: 10px;
+    font-size: 1.2em;
+    font-weight: 600;
+    padding: 18px 0;
+    text-align: center;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, border 0.2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.seat-btn.selected {
+    background: #2d4ed6;
+    color: #fff;
+    border: 2px solid #1a2a6c;
+}
+.seat-btn:disabled {
+    background: #ccc;
+    color: #888;
+    border: 2px solid #aaa;
+    cursor: not-allowed;
+}
+.seat-actions {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+.seat-actions button {
+    background: #2d4ed6;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    transition: background 0.2s;
+}
+.seat-actions button:hover {
+    background: #1a2a6c;
+}
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100vw;
+    background: #fff;
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.10);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 10px 0;
+    max-width: 400px;
+    margin: 0 auto;
+}
+.bottom-nav .nav-icon {
+    font-size: 1.5em;
+    color: #2d4ed6;
+    padding: 0 12px;
+}
