@@ -1,0 +1,2 @@
+<?php
+// Passenger controller placeholder
