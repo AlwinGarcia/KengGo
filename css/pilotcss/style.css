@@ -670,70 +670,135 @@ html, body {
     font-size: 14px;
 }
 
-/* Add Trip Page */
-
-.add-page {
-    background: #f5f5f5;
+/* === Add Trip Page (HTML-only version) === */
+.add-page .page-header {
+    padding: 8px 12px 0 12px;
 }
 
-.add-title {
-    font-size: 22px;
-    font-weight: 600;
-    margin: 20px 0 10px 0;
-    padding-left: 20px;
+.add-page .add-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--dark);
+    margin: 8px 0 2px 0;
+    padding-left: 6px;
 }
 
-.add-form {
+.add-page .add-sub {
+    font-size: 12px;
+    color: rgba(73,73,73,0.8);
+    margin: 0 0 12px 6px;
+}
+
+/* form layout */
+.add-page .add-form {
+    padding: 0 12px 12px 12px;
     display: flex;
     flex-direction: column;
-    gap: 18px;
-    padding: 0 20px;
-    margin-top: 10px;
+    gap: 12px;
 }
 
-.add-field {
-    background: #ffffff;
-    border-radius: 16px;
-    padding: 18px 20px;
+/* rows and two-column layout */
+.add-page .row {
+    display: flex;
+    gap: 12px;
+}
+
+.add-page .two-col > .add-field {
+    flex: 1 1 50%;
+}
+
+/* single field */
+.add-page .add-field {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 12px 14px;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.06);
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    gap: 8px;
 }
 
-.add-field label {
-    font-size: 14px;
+/* labels and inputs */
+.add-page .add-field label {
+    font-size: 13px;
     font-weight: 600;
-    color: #333;
+    color: var(--dark);
 }
 
-.add-field input {
-    font-family: Poppins, sans-serif;
+.add-page .add-field input[type="text"],
+.add-page .add-field input[type="number"],
+.add-page .add-field input[type="date"],
+.add-page .add-field input[type="time"],
+.add-page .add-field textarea {
     border: none;
+    outline: none;
     background: transparent;
     font-size: 15px;
-    outline: none;
+    color: var(--dark);
+    font-family: var(--font);
 }
 
-/* Submit Button */
-.add-submit-wrapper {
-    margin-top: 25px;
-    padding: 0 20px;
+/* textarea */
+.add-page .add-field textarea {
+    resize: vertical;
 }
 
-.add-submit {
-    width: 100%;
-    background: #1a73e8;
-    color: white;
-    padding: 16px 0;
-    border-radius: 20px;
-    border: none;
-    font-size: 16px;
+/* status pill group */
+.add-page .status-row {
+    display: flex;
+    gap: 8px;
+}
+
+.add-page .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(31,65,187,0.06);
+    color: var(--dark);
+    padding: 6px 10px;
+    border-radius: 999px;
     font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    font-size: 13px;
 }
 
-.add-submit:active {
-    opacity: 0.8;
+.add-page .pill input[type="radio"] {
+    margin: 0 6px 0 0;
+}
+
+/* actions */
+.add-page .form-actions {
+    display: flex;
+    gap: 12px;
+    padding: 0 12px 18px 12px;
+}
+
+.add-page .btn {
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 15px;
+    box-shadow: 0 10px 22px rgba(0,0,0,0.10);
+    cursor: pointer;
+    border: none;
+}
+
+.add-page .btn.secondary {
+    background: var(--white);
+    color: var(--dark);
+    border: 1px solid rgba(0,0,0,0.06);
+    flex: 1;
+}
+
+.add-page .btn.primary {
+    background: var(--blue);
+    color: var(--white);
+    flex: 2;
+    box-shadow: 0 18px 34px rgba(31,65,187,0.28);
+}
+
+/* responsive */
+@media (max-width: 520px) {
+    .add-page .row { flex-direction: column; }
+    .add-page .two-col > .add-field { flex-basis: auto; }
+    .add-page .form-actions { flex-direction: column; }
 }

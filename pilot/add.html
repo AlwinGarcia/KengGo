@@ -28,37 +28,93 @@
     </section>
 
     <!-- page title -->
-    <h2 class="add-title">Add Trip</h2>
+    <header class="page-header">
+        <center><h2 class="add-title">Add Trip</h2></center>
+        <center><p class="add-sub">Create a new shuttle trip. All fields marked * are required.</p></center>
+    </header>
 
-    <!-- form container -->
-    <section class="add-form">
+    <!-- form container (no JS, pure HTML) -->
+    <form class="add-form" id="addTripForm" novalidate>
 
-        <div class="add-field">
-            <label>Shuttle Number</label>
-            <input type="text" placeholder="Enter shuttle name or number" />
+        <div class="row two-col">
+            <div class="add-field">
+                <label for="shuttle_number">Shuttle Number *</label>
+                <input id="shuttle_number" name="shuttle_number" type="text" placeholder="e.g. Shuttle 01" required />
+            </div>
+
+            <div class="add-field">
+                <label for="driver_name">Driver</label>
+                <input id="driver_name" name="driver_name" type="text" placeholder="Driver full name" />
+            </div>
+        </div>
+
+        <div class="row two-col">
+            <div class="add-field">
+                <label for="plate_number">Vehicle Plate</label>
+                <input id="plate_number" name="plate_number" type="text" placeholder="e.g. ABC-1234" />
+            </div>
+
+            <div class="add-field">
+                <label for="seats">Seats Available</label>
+                <input id="seats" name="seats" type="number" min="1" placeholder="e.g. 20" />
+            </div>
+        </div>
+
+        <div class="row two-col">
+            <div class="add-field">
+                <label for="from_address">From *</label>
+                <input id="from_address" name="from_address" type="text" placeholder="Starting point address" required />
+            </div>
+
+            <div class="add-field">
+                <label for="to_address">To *</label>
+                <input id="to_address" name="to_address" type="text" placeholder="Destination address" required />
+            </div>
+        </div>
+
+        <div class="row two-col">
+            <div class="add-field">
+                <label for="trip_date">Date *</label>
+                <input id="trip_date" name="trip_date" type="date" required />
+            </div>
+
+            <div class="add-field">
+                <label for="depart_time">Departure Time *</label>
+                <input id="depart_time" name="depart_time" type="time" required />
+            </div>
+        </div>
+
+        <div class="row two-col">
+            <div class="add-field">
+                <label for="arrive_time">Estimated Arrival</label>
+                <input id="arrive_time" name="arrive_time" type="time" />
+            </div>
+
+            <div class="add-field">
+                <label for="price">Price (₱) *</label>
+                <input id="price" name="price" type="number" min="0" step="0.01" placeholder="100.00" required />
+            </div>
         </div>
 
         <div class="add-field">
-            <label>From</label>
-            <input type="text" placeholder="Enter starting point" />
+            <label for="status">Status</label>
+            <div class="status-row">
+                <label class="pill"><input type="radio" name="status" value="active" checked> Active</label>
+                <label class="pill"><input type="radio" name="status" value="inactive"> Inactive</label>
+                <label class="pill"><input type="radio" name="status" value="pending"> Pending</label>
+            </div>
         </div>
 
         <div class="add-field">
-            <label>To</label>
-            <input type="text" placeholder="Enter destination" />
+            <label for="notes">Notes</label>
+            <textarea id="notes" name="notes" rows="3" placeholder="Optional notes about the trip (routes, restrictions, etc.)"></textarea>
         </div>
 
-        <div class="add-field">
-            <label>Price</label>
-            <input type="number" placeholder="₱ Amount" />
+        <div class="form-actions">
+            <button type="reset" class="btn secondary" id="cancelBtn">Cancel</button>
+            <button type="submit" class="btn primary" id="submitBtn">Add Trip</button>
         </div>
-
-    </section>
-
-    <!-- submit button -->
-    <div class="add-submit-wrapper">
-        <button class="add-submit">Add Trip</button>
-    </div>
+    </form>
 
     <!-- bottom navigation -->
     <nav class="bottom-nav">
@@ -70,12 +126,5 @@
     </nav>
 
 </main>
-
-<script>
-    document.querySelector(".add-submit").addEventListener("click", () => {
-        alert("Trip added successfully.");
-    });
-</script>
-
 </body>
 </html>
