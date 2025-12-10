@@ -3,8 +3,8 @@
 $servername = "127.0.0.1";
 $username   = "root";
 $password   = "";
-$database   = "webdev_prescription";
-$port       = 3307;
+$database   = "kenggo";
+$port       = 3306;
 
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 

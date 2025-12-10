@@ -184,10 +184,19 @@ INSERT INTO `passengers` (`id`, `name`, `email`, `password`, `created_at`) VALUE
 DROP TABLE IF EXISTS `shuttles`;
 CREATE TABLE IF NOT EXISTS `shuttles` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `shuttle_number` varchar(100) DEFAULT NULL,
+  `plate_number` varchar(50) DEFAULT NULL,
   `route` varchar(255) NOT NULL,
   `departure_time` time NOT NULL,
+  `arrival_time` time DEFAULT NULL,
   `capacity` int(11) NOT NULL,
+  `price` decimal(10,2) DEFAULT NULL,
+  `status` enum('active','inactive','pending') DEFAULT 'active',
+  `trip_date` date DEFAULT NULL,
+  `notes` text DEFAULT NULL,
   `driver_id` int(11) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `driver_id` (`driver_id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
@@ -196,9 +205,9 @@ CREATE TABLE IF NOT EXISTS `shuttles` (
 -- Dumping data for table `shuttles`
 --
 
-INSERT INTO `shuttles` (`id`, `route`, `departure_time`, `capacity`, `driver_id`) VALUES
-(1, 'Bakakeng to SLU Maryheights', '07:30:00', 18, 1),
-(2, 'SLU Maryheights to Bakakeng', '17:30:00', 18, 2);
+INSERT INTO `shuttles` (`id`, `shuttle_number`, `plate_number`, `route`, `departure_time`, `arrival_time`, `capacity`, `price`, `status`, `trip_date`, `notes`, `driver_id`) VALUES
+(1, 'Shuttle 01', 'SLU-001', 'Bakakeng to SLU Maryheights', '07:30:00', '08:30:00', 18, 50.00, 'active', '2025-12-10', 'Morning route', 1),
+(2, 'Shuttle 02', 'SLU-002', 'SLU Maryheights to Bakakeng', '17:30:00', '18:30:00', 18, 50.00, 'active', '2025-12-10', 'Afternoon route', 2);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

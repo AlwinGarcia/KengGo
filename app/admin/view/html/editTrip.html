@@ -35,71 +35,72 @@
 
     <!-- form: purely markup, prefilled values shown -->
     <form class="edit-form" id="editTripForm" novalidate>
+        <input type="hidden" id="trip_id" name="trip_id" />
 
         <div class="row two-col">
             <div class="edit-field">
                 <label for="shuttle_number">Shuttle Number *</label>
-                <input id="shuttle_number" name="shuttle_number" type="text" value="Shuttle 01" required />
+                <input id="shuttle_number" name="shuttle_number" type="text" required />
             </div>
 
             <div class="edit-field">
                 <label for="driver_name">Driver</label>
-                <input id="driver_name" name="driver_name" type="text" value="Gideon Santos" />
+                <input id="driver_name" name="driver_name" type="text" />
             </div>
         </div>
 
         <div class="row two-col">
             <div class="edit-field">
                 <label for="plate_number">Vehicle Plate</label>
-                <input id="plate_number" name="plate_number" type="text" value="ABC-1234" />
+                <input id="plate_number" name="plate_number" type="text" />
             </div>
 
             <div class="edit-field">
                 <label for="seats">Seats Available</label>
-                <input id="seats" name="seats" type="number" min="1" value="20" />
+                <input id="seats" name="seats" type="number" min="1" />
             </div>
         </div>
 
         <div class="row two-col">
             <div class="edit-field">
                 <label for="from_address">From *</label>
-                <input id="from_address" name="from_address" type="text" value="72-74 Oxford St." required />
+                <input id="from_address" name="from_address" type="text" required />
             </div>
 
             <div class="edit-field">
                 <label for="to_address">To *</label>
-                <input id="to_address" name="to_address" type="text" value="20 Grosvenor Sq." required />
+                <input id="to_address" name="to_address" type="text" required />
             </div>
         </div>
 
         <div class="row two-col">
             <div class="edit-field">
                 <label for="trip_date">Date *</label>
-                <input id="trip_date" name="trip_date" type="date" value="2025-12-10" required />
+                <input id="trip_date" name="trip_date" type="date" required />
             </div>
 
             <div class="edit-field">
                 <label for="depart_time">Departure Time *</label>
-                <input id="depart_time" name="depart_time" type="time" value="09:00" required />
+                <input id="depart_time" name="depart_time" type="time" required />
             </div>
         </div>
 
         <div class="row two-col">
             <div class="edit-field">
                 <label for="arrive_time">Estimated Arrival</label>
-                <input id="arrive_time" name="arrive_time" type="time" value="10:30" />
+                <input id="arrive_time" name="arrive_time" type="time" />
             </div>
 
             <div class="edit-field">
                 <label for="price">Price (₱) *</label>
-                <input id="price" name="price" type="number" min="0" step="0.01" value="100.00" required />
+                <input id="price" name="price" type="number" min="0" step="0.01" required />
             </div>
         </div>
 
         <div class="edit-field">
             <label for="status">Status</label>
             <div class="status-row">
-                <label class="pill"><input type="radio" name="status" value="active" checked> Active</label>
+                <label class="pill"><input type="radio" name="status" value="active"> Active</label>
                 <label class="pill"><input type="radio" name="status" value="inactive"> Inactive</label>
                 <label class="pill"><input type="radio" name="status" value="pending"> Pending</label>
             </div>
@@ -107,7 +108,7 @@
 
         <div class="edit-field">
             <label for="notes">Notes</label>
-            <textarea id="notes" name="notes" rows="3">Runs via central route. No heavy luggage.</textarea>
+            <textarea id="notes" name="notes" rows="3"></textarea>
         </div>
 
         <div class="form-actions">
@@ -143,6 +144,8 @@
 </main>
 
 <script>
+    let formDataToSubmit = null;
+
     // Toast notification helper
     function showToast(message, type = 'info', duration = 3000) {
         const toast = document.getElementById('toast');
@@ -153,6 +156,64 @@
         }, duration);
     }
 
+    // Load trip data on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const tripId = urlParams.get('id');
+
+        if (tripId) {
+            loadTripData(tripId);
+        } else {
+            showToast('No trip ID provided', 'error');
+        }
+    });
+
+    function loadTripData(tripId) {
+        fetch('../php/edit_trip.php?id=' + tripId, {
+            method: 'GET'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.data) {
+                populateForm(data.data);
+            } else {
+                showToast(data.message || 'Failed to load trip data', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('Error loading trip data: ' + error.message, 'error');
+        });
+    }
+
+    function populateForm(trip) {
+        document.getElementById('trip_id').value = trip.id;
+        document.getElementById('shuttle_number').value = trip.shuttle_number || '';
+        document.getElementById('driver_name').value = trip.driver_name || '';
+        document.getElementById('plate_number').value = trip.plate_number || '';
+        document.getElementById('seats').value = trip.capacity || '';
+        
+        // Extract from and to from route
+        const route = trip.route || '';
+        const routeParts = route.split(' to ');
+        document.getElementById('from_address').value = routeParts[0] || '';
+        document.getElementById('to_address').value = routeParts[1] || '';
+        
+        document.getElementById('trip_date').value = trip.trip_date || '';
+        document.getElementById('depart_time').value = trip.departure_time || '';
+        document.getElementById('arrive_time').value = trip.arrival_time || '';
+        document.getElementById('price').value = trip.price || '';
+        document.getElementById('notes').value = trip.notes || '';
+        
+        // Set status radio
+        if (trip.status) {
+            const statusRadio = document.querySelector(`input[name="status"][value="${trip.status}"]`);
+            if (statusRadio) {
+                statusRadio.checked = true;
+            }
+        }
+    }
+
     // Form submission
     document.getElementById('editTripForm').addEventListener('submit', function(e) {
         e.preventDefault();
@@ -160,12 +221,16 @@
         const shuttleNumber = document.getElementById('shuttle_number').value;
         const from = document.getElementById('from_address').value;
         const to = document.getElementById('to_address').value;
+        const date = document.getElementById('trip_date').value;
+        const departure = document.getElementById('depart_time').value;
+        const price = document.getElementById('price').value;
 
-        if (!shuttleNumber || !from || !to) {
+        if (!shuttleNumber || !from || !to || !date || !departure || !price) {
             showToast('Please fill in all required fields', 'error');
             return;
         }
 
+        formDataToSubmit = new FormData(this);
         document.getElementById('confirmMessage').textContent = `Save changes for ${shuttleNumber}?`;
         document.getElementById('confirmModal').classList.add('show');
     });
@@ -175,17 +240,34 @@
         submitBtn.classList.add('loading');
         submitBtn.disabled = true;
 
-        setTimeout(() => {
+        fetch('../php/edit_trip.php', {
+            method: 'POST',
+            body: formDataToSubmit
+        })
+        .then(response => response.json())
+        .then(data => {
             submitBtn.classList.remove('loading');
             submitBtn.disabled = false;
             
             closeConfirmModal();
-            showToast('Trip updated successfully!', 'success');
-            
-            setTimeout(() => {
-                window.location.href = 'dashboard.html';
-            }, 1500);
-        }, 1500);
+
+            if (data.success) {
+                showToast(data.message || 'Trip updated successfully!', 'success');
+                
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1500);
+            } else {
+                showToast(data.message || 'Failed to update trip', 'error');
+            }
+        })
+        .catch(error => {
+            submitBtn.classList.remove('loading');
+            submitBtn.disabled = false;
+            closeConfirmModal();
+            console.error('Error:', error);
+            showToast('Error: ' + error.message, 'error');
+        });
     }
 
     function closeConfirmModal() {

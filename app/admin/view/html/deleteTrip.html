@@ -31,71 +31,8 @@
     <h2 class="delete-title">Delete Trip?</h2>
 
     <!-- grid of trips -->
-    <section class="delete-grid">
-
-        <!-- CARD 1 -->
-        <article class="delete-card">
-            <div class="delete-card-top">
-                <div class="delete-icon">🚌</div>
-                <div class="delete-title-text">Shuttle 01</div>
-                <button class="delete-remove" onclick="confirmDelete('Shuttle 01', event)">🗑️</button>
-            </div>
-
-            <div class="delete-body">
-                <div class="route">
-                    <div class="from">↙ From: 72-74 Oxford St.</div>
-                    <div class="to">↗ To: 20 Grosvenor Sq.</div>
-                </div>
-
-                <div class="price">
-                    <span>Price:</span>
-                    <strong>₱100</strong>
-                </div>
-            </div>
-        </article>
-
-        <!-- CARD 2 (COPY) -->
-        <article class="delete-card">
-            <div class="delete-card-top">
-                <div class="delete-icon">🚌</div>
-                <div class="delete-title-text">Shuttle 02</div>
-                <button class="delete-remove" onclick="confirmDelete('Shuttle 02', event)">🗑️</button>
-            </div>
-
-            <div class="delete-body">
-                <div class="route">
-                    <div class="from">↙ From: 72-74 Oxford St.</div>
-                    <div class="to">↗ To: 20 Grosvenor Sq.</div>
-                </div>
-
-                <div class="price">
-                    <span>Price:</span>
-                    <strong>₱100</strong>
-                </div>
-            </div>
-        </article>
-
-        <!-- CARD 3 (COPY) -->
-        <article class="delete-card">
-            <div class="delete-card-top">
-                <div class="delete-icon">🚌</div>
-                <div class="delete-title-text">Shuttle 03</div>
-                <button class="delete-remove" onclick="confirmDelete('Shuttle 03', event)">🗑️</button>
-            </div>
-
-            <div class="delete-body">
-                <div class="route">
-                    <div class="from">↙ From: 72-74 Oxford St.</div>
-                    <div class="to">↗ To: 20 Grosvenor Sq.</div>
-                </div>
-
-                <div class="price">
-                    <span>Price:</span>
-                    <strong>₱100</strong>
-                </div>
-            </div>
-        </article>
-
+    <section class="delete-grid" id="tripsContainer">
+        <!-- Trips will be loaded here dynamically -->
     </section>
 
     <!-- Toast notification -->
@@ -137,29 +74,113 @@
         }, duration);
     }
 
-    function confirmDelete(tripName, e) {
+    // Load trips on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        loadTrips();
+    });
+
+    function loadTrips() {
+        fetch('../php/delete_trip.php', {
+            method: 'GET'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.data) {
+                renderTrips(data.data);
+            } else {
+                showToast('Failed to load trips', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('Error loading trips: ' + error.message, 'error');
+        });
+    }
+
+    function renderTrips(trips) {
+        const container = document.getElementById('tripsContainer');
+        container.innerHTML = '';
+
+        if (trips.length === 0) {
+            container.innerHTML = '<p style="text-align: center; padding: 2rem;">No trips found</p>';
+            return;
+        }
+
+        trips.forEach(trip => {
+            const routeParts = trip.route ? trip.route.split(' to ') : ['', ''];
+            const cardHTML = `
+                <article class="delete-card">
+                    <div class="delete-card-top">
+                        <div class="delete-icon">🚌</div>
+                        <div class="delete-title-text">${trip.shuttle_number || 'Shuttle'}</div>
+                        <button class="delete-remove" onclick="confirmDelete(${trip.id}, '${trip.shuttle_number || 'Shuttle'}', event)">🗑️</button>
+                    </div>
+
+                    <div class="delete-body">
+                        <div class="route">
+                            <div class="from">↙ From: ${routeParts[0] || ''}</div>
+                            <div class="to">↗ To: ${routeParts[1] || ''}</div>
+                        </div>
+
+                        <div class="price">
+                            <span>Price:</span>
+                            <strong>₱${trip.price || '0'}</strong>
+                        </div>
+                    </div>
+                </article>
+            `;
+            container.innerHTML += cardHTML;
+        });
+    }
+
+    function confirmDelete(tripId, tripName, e) {
         e.preventDefault();
-        tripToDelete = tripName;
+        tripToDelete = tripId;
         document.getElementById('confirmMessage').textContent = `Are you sure you want to delete ${tripName}? This action cannot be undone.`;
         document.getElementById('confirmModal').classList.add('show');
     }
 
     function deleteTrip() {
+        if (!tripToDelete) {
+            showToast('Invalid trip selection', 'error');
+            return;
+        }
+
         const confirmBtn = document.querySelector('.modal-actions .btn-confirm');
         confirmBtn.classList.add('loading');
         confirmBtn.disabled = true;
 
-        setTimeout(() => {
+        const formData = new FormData();
+        formData.append('trip_id', tripToDelete);
+
+        fetch('../php/delete_trip.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
             confirmBtn.classList.remove('loading');
             confirmBtn.disabled = false;
             
             closeConfirmModal();
-            showToast(`${tripToDelete} deleted successfully!`, 'success');
-            
-            setTimeout(() => {
-                window.location.href = 'dashboard.html';
-            }, 1500);
-        }, 1500);
+
+            if (data.success) {
+                showToast(data.message || 'Trip deleted successfully!', 'success');
+                
+                setTimeout(() => {
+                    loadTrips(); // Reload the trips list
+                }, 1500);
+            } else {
+                showToast(data.message || 'Failed to delete trip', 'error');
+            }
+        })
+        .catch(error => {
+            confirmBtn.classList.remove('loading');
+            confirmBtn.disabled = false;
+            closeConfirmModal();
+            console.error('Error:', error);
+            showToast('Error: ' + error.message, 'error');
+        });
     }
 
     function closeConfirmModal() {
@@ -178,34 +199,7 @@
         }
     });
 </script>
-    <!-- warning box -->
-    <div class="delete-warning">
-        <strong>Warning</strong>
-        <p>By deleting this trip, you will not be able to retrieve it.</p>
-    </div>
-
-    <!-- slide to confirm -->
-    <div class="slide-wrapper">
-        <div class="slide-button" id="slideConfirm">Slide To Confirm</div>
-    </div>
-
-    <!-- bottom navigation -->
-    <nav class="bottom-nav">
-        <button class="nav-item">♡</button>
-        <button class="nav-item">📍</button>
-        <button class="nav-item nav-item--active">🏠</button>
-        <button class="nav-item">👤</button>
-        <button class="nav-item">⚙️</button>
-    </nav>
-
-</main>
-
-<script>
-    const slideBtn = document.getElementById("slideConfirm");
-    slideBtn.addEventListener("click", function () {
-        alert("Trip deleted successfully.");
-    });
-</script>
 
 </body>
 </html>
+

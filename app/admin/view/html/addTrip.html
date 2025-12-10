@@ -183,20 +183,37 @@
         submitBtn.classList.add('loading');
         submitBtn.disabled = true;
 
-        // Simulate API call
-        setTimeout(() => {
+        // Submit form data via AJAX
+        fetch('../php/add_trip.php', {
+            method: 'POST',
+            body: formDataToSubmit
+        })
+        .then(response => response.json())
+        .then(data => {
             submitBtn.classList.remove('loading');
             submitBtn.disabled = false;
             
             closeConfirmModal();
-            showToast('Trip added successfully!', 'success');
-            
-            // Reset form and redirect after delay
-            setTimeout(() => {
-                document.getElementById('addTripForm').reset();
-                window.location.href = 'dashboard.html';
-            }, 1500);
-        }, 1500);
+
+            if (data.success) {
+                showToast(data.message || 'Trip added successfully!', 'success');
+                
+                // Reset form and redirect after delay
+                setTimeout(() => {
+                    document.getElementById('addTripForm').reset();
+                    window.location.href = 'dashboard.html';
+                }, 1500);
+            } else {
+                showToast(data.message || 'Failed to add trip', 'error');
+            }
+        })
+        .catch(error => {
+            submitBtn.classList.remove('loading');
+            submitBtn.disabled = false;
+            closeConfirmModal();
+            console.error('Error:', error);
+            showToast('Error: ' + error.message, 'error');
+        });
     }
 
     function closeConfirmModal() {
