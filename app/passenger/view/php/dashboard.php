@@ -52,11 +52,19 @@ $trips         = $trips ?? [];
             </div>
         </div>
 
+        <!-- ✅ Booked Trips Button -->
+        <div class="booked-trips-btn">
+            <a href="index.php?page=booked-trips" class="btn-primary">
+                <i class="fa-solid fa-clipboard-check"></i> View Booked Trips
+            </a>
+        </div>
+
         <!-- Bottom Navigation -->
         <div class="bottom-nav">
             <a href="index.php?page=dashboard" class="nav-icon"><i class="fa-solid fa-house"></i></a>
             <a href="index.php?page=seat-management&shuttle_id=1" class="nav-icon"><i class="fa-regular fa-location-dot"></i></a>
-            <a href="index.php?page=trips" class="nav-icon"><i class="fa-solid fa-clipboard-list"></i></a>
+            <a href="index.php?page=booked-trips" class="nav-icon"><i class="fa-solid fa-clipboard-check"></i></a>
+            <a href="index.php?page=past-trips" class="nav-icon"><i class="fa-solid fa-clock-rotate-left"></i></a>
             <a href="index.php?page=profile" class="nav-icon"><i class="fa-solid fa-user"></i></a>
             <a href="index.php?page=settings" class="nav-icon"><i class="fa-solid fa-gear"></i></a>
         </div>

@@ -4,12 +4,14 @@ session_start();
 require_once __DIR__ . "/../includes/db_connect.php";
 require_once __DIR__ . "/controller/LoginController.php";
 require_once __DIR__ . "/passenger/controller/DashboardController.php";
-require_once __DIR__ . "/passenger/controller/SeatController.php"; // ✅ added
+require_once __DIR__ . "/passenger/controller/SeatController.php";
+require_once __DIR__ . "/passenger/controller/BookedTripsController.php"; // ✅ added
 
 // Initialize controllers
 $controller = new LoginController($conn);
 $dashboardController = new DashboardController($conn);
-$seatController = new SeatController($conn); // ✅ added
+$seatController = new SeatController($conn);
+$bookedTripsController = new BookedTripsController($conn); // ✅ added
 
 // Route based on ?page=
 $page = $_GET['page'] ?? 'login';
@@ -27,8 +29,12 @@ switch ($page) {
         $dashboardController->showDashboard();
         break;
 
-    case 'seat-management': // ✅ new route
+    case 'seat-management':
         $seatController->showSeatManagement();
+        break;
+
+    case 'booked-trips': // ✅ new route
+        $bookedTripsController->showBookedTrips();
         break;
 
     default:
