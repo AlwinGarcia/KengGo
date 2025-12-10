@@ -1,1 +1,0 @@
-<!-- Shared header layout placeholder -->

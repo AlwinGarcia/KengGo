@@ -1,0 +1,128 @@
+:root {
+  --blue: #1F41BB;
+  --yellow: #E8C22E;
+  --dark: #494949;
+  --white: #FFFFFF;
+  --gray: #626262;
+  --font: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body.pilot-login-page {
+  margin: 0;
+  font-family: var(--font);
+  background: var(--yellow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.login-shell {
+  width: 100%;
+  max-width: 420px;
+  padding: 20px;
+}
+
+.login-card {
+  background: var(--white);
+  border-radius: 16px;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+  padding: 32px 24px;
+  text-align: center;
+}
+
+.login-title {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--blue);
+}
+
+.login-sub {
+  margin: 12px 0 24px 0;
+  font-size: 14px;
+  color: var(--dark);
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.form-group label {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--dark);
+}
+
+.form-group input {
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.form-links {
+  text-align: right;
+}
+
+.form-links a {
+  font-size: 13px;
+  color: var(--blue);
+  text-decoration: none;
+}
+
+.form-links a:hover {
+  text-decoration: underline;
+}
+
+.btn {
+  padding: 14px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.btn.signin {
+  background: var(--blue);
+  color: var(--white);
+}
+
+.btn.signup {
+  background: var(--white);
+  color: var(--dark);
+  border: 1px solid rgba(0,0,0,0.08);
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.14);
+}
+
+@media (max-width: 480px) {
+  .login-card {
+    padding: 24px 18px;
+  }
+  .login-title {
+    font-size: 22px;
+  }
+  .btn {
+    font-size: 15px;
+    padding: 12px;
+  }
+}

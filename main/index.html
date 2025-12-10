@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>KengGo — Main Login</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Local CSS -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="main-login-page">
+  <main class="login-shell">
+    <section class="login-card">
+      <h1 class="login-title">KengGo Shuttle</h1>
+      <p class="login-sub">Select your role to continue</p>
+
+      <div class="role-buttons">
+        <button class="btn pilot" onclick="window.location.href='../app/driver/view/login.html'">🚐 Pilot</button>
+        <button class="btn admin" onclick="window.location.href='../app/admin/view/html/login.html'">🛡️ Admin</button>
+        <button class="btn user" onclick="window.location.href='../app/passenger/view/html/login.html'">🧍 User</button>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
