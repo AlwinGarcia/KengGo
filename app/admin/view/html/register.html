@@ -17,11 +17,20 @@
         </header>
 
         <form class="register-form" id="registerForm" novalidate>
+            <label class="visually-hidden" for="name">Full name</label>
+            <input id="name" name="name" type="text" placeholder="Full name" required>
+
             <label class="visually-hidden" for="email">Email</label>
             <input id="email" name="email" type="email" placeholder="Email" required>
 
             <label class="visually-hidden" for="requestId">Request ID</label>
-            <input id="requestId" name="requestId" type="text" placeholder="Request ID" required>
+            <input id="requestId" name="requestId" type="text" placeholder="Request ID (optional)">
+
+            <label class="visually-hidden" for="role">Role</label>
+            <select id="role" name="role" class="select-input">
+                <option value="manager">Manager</option>
+                <option value="staff" selected>Staff</option>
+            </select>
 
             <div style="height:8px;"></div>
 
@@ -49,31 +58,36 @@
     }
 
     // Register form submission
-    document.getElementById('registerForm').addEventListener('submit', function(e) {
+    document.getElementById('registerForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         const registerBtn = document.getElementById('registerBtn');
-        const email = document.getElementById('email').value;
-        const requestId = document.getElementById('requestId').value;
-        
-        if (!email.includes('@')) {
-            showToast('Please enter a valid email', 'error');
-            return;
-        }
-
         registerBtn.classList.add('loading');
         registerBtn.disabled = true;
 
-        // Simulate API call
-        setTimeout(() => {
-            registerBtn.classList.remove('loading');
-            registerBtn.disabled = false;
-            
-            showToast('Request submitted successfully! Awaiting approval...', 'success');
+        const formData = new FormData(this);
+
+        try {
+            const response = await fetch('../php/request_account.php', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+                throw new Error(data.message || 'Request failed');
+            }
+
+            showToast('Request submitted! Code: ' + (data.data?.request_code || 'generated'), 'success');
             setTimeout(() => {
                 document.getElementById('registerForm').reset();
                 window.location.href = 'login.html';
-            }, 2000);
-        }, 1500);
+            }, 1200);
+        } catch (error) {
+            showToast(error.message, 'error');
+        } finally {
+            registerBtn.classList.remove('loading');
+            registerBtn.disabled = false;
+        }
     });
 
     // Navigate to login

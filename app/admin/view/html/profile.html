@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Driver Profile — KengGo Shuttle</title>
+    <title>Admin Profile — KengGo Shuttle</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <!-- main shared stylesheet -->
@@ -13,37 +13,30 @@
 <body class="dashboard-page profile-page">
 <main class="dashboard-shell">
 
-    <!-- status bar -->
-    <div class="dashboard-topbar">
-        <span class="status-time">9:41</span>
-        <span class="status-icons">📶 🔋</span>
-    </div>
-
     <!-- header -->
     <section class="dashboard-header">
-        <div class="avatar">🟩</div>
         <div class="greeting">
             <div class="greeting-line">Hey, <strong>Gideon</strong></div>
         </div>
-        <button class="icon-btn bell" aria-label="Notifications">🔔</button>
+        <button class="icon-btn bell" aria-label="Notifications" onclick="window.location.href='notifications.html'">🔔</button>
     </section>
 
     <!-- Profile Card -->
-    <section class="profile-card" aria-label="Driver profile">
+    <section class="profile-card" aria-label="Admin profile">
         <div class="profile-top">
-            <div class="profile-avatar">👨‍✈️</div>
+            <div class="profile-avatar">👨‍💼</div>
             <div class="profile-meta">
                 <h1 class="profile-name">Gideon Santos</h1>
-                <div class="profile-role">Driver</div>
+                <div class="profile-role">Admin Manager</div>
                 <div class="profile-status">
                     <span class="status-pill status-active">Active</span>
-                    <span class="profile-id">ID: D-00123</span>
+                    <span class="profile-id">ID: ADM-1001</span>
                 </div>
             </div>
 
             <div class="profile-actions">
                 <button class="btn small edit-btn" title="Edit profile" onclick="editProfile()">Edit</button>
-                <button class="btn small delete-btn" title="Delete driver" onclick="deleteProfile()">Delete</button>
+                <button class="btn small delete-btn" title="Logout" onclick="logoutProfile()">Logout</button>
             </div>
         </div>
 
@@ -61,52 +54,52 @@
             </div>
 
             <div class="profile-section">
-                <h3>Vehicle</h3>
+                <h3>Admin Access</h3>
                 <div class="info-row">
-                    <div class="info-label">Vehicle</div>
-                    <div class="info-value">Shuttle 01 — Toyota HiAce</div>
+                    <div class="info-label">Role</div>
+                    <div class="info-value">System Manager</div>
                 </div>
                 <div class="info-row">
-                    <div class="info-label">Plate</div>
-                    <div class="info-value">ABC-1234</div>
+                    <div class="info-label">Access Level</div>
+                    <div class="info-value">Full Access</div>
                 </div>
                 <div class="info-row">
-                    <div class="info-label">Seats</div>
-                    <div class="info-value">20</div>
-                </div>
-            </div>
-
-            <div class="profile-section">
-                <h3>Documents</h3>
-                <div class="info-row">
-                    <div class="info-label">Driver License</div>
-                    <div class="info-value">DL-987654 (Expires: 2026-03-15)</div>
-                </div>
-                <div class="info-row">
-                    <div class="info-label">Insurance</div>
-                    <div class="info-value">Valid (Expires: 2026-09-30)</div>
+                    <div class="info-label">Department</div>
+                    <div class="info-value">Operations</div>
                 </div>
             </div>
 
             <div class="profile-section">
-                <h3>Recent Trips</h3>
+                <h3>Account Details</h3>s</h3>
+                <div class="info-row">
+                    <div class="info-label">Joined Date</div>
+                    <div class="info-value">2025-01-15</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Last Login</div>
+                    <div class="info-value">2025-12-10 08:30 AM</div>
+                </div>
+            </div>
+
+            <div class="profile-section">
+                <h3>Recent Activity</h3>
                 <div class="trips-grid">
                     <article class="trip-mini">
-                        <div class="trip-icon">🚌</div>
+                        <div class="trip-icon">➕</div>
                         <div class="trip-info">
-                            <div class="trip-title">Shuttle 01</div>
-                            <div class="trip-meta">72-74 Oxford St. → 20 Grosvenor Sq.</div>
+                            <div class="trip-title">Added Shuttle 01</div>
+                            <div class="trip-meta">Created new trip to SLU Maryheights</div>
                         </div>
-                        <div class="trip-price">₱100</div>
+                        <div class="trip-price">Today</div>
                     </article>
 
                     <article class="trip-mini">
-                        <div class="trip-icon">🚌</div>
+                        <div class="trip-icon">✏️</div>
                         <div class="trip-info">
-                            <div class="trip-title">Shuttle 23</div>
-                            <div class="trip-meta">Great Portland St. → Baker Street</div>
+                            <div class="trip-title">Updated Shuttle 23</div>
+                            <div class="trip-meta">Modified departure time</div>
                         </div>
-                        <div class="trip-price">₱100</div>
+                        <div class="trip-price">Yesterday</div>
                     </article>
                 </div>
             </div>
@@ -120,8 +113,8 @@
     <!-- Confirm Modal -->
     <div class="modal-overlay" id="confirmModal">
         <div class="modal">
-            <h3 id="modalTitle">Delete Driver</h3>
-            <p id="confirmMessage">Are you sure you want to delete this driver profile?</p>
+            <h3 id="modalTitle">Logout</h3>
+            <p id="confirmMessage">Are you sure you want to logout?</p>
             <div class="modal-actions">
                 <button class="modal-actions btn-cancel" onclick="closeConfirmModal()">Cancel</button>
                 <button class="modal-actions btn-confirm" id="confirmBtn" onclick="confirmAction()">Confirm</button>
@@ -129,10 +122,10 @@
         </div>
     </div>
 
-    <!-- bottom navigation -->
+    <!-- bottom navigation bar -->
     <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
         <button class="nav-item" onclick="navToPage('dashboard.html')" aria-label="Dashboard">🏠</button>
-        <button class="nav-item" onclick="navToPage('add.html')" aria-label="Add">➕</button>
+        <button class="nav-item" onclick="navToPage('addTrip.html')" aria-label="Add">➕</button>
         <button class="nav-item nav-item--active" onclick="navToPage('profile.html')" aria-label="Profile">👤</button>
         <button class="nav-item" onclick="navToPage('notifications.html')" aria-label="Notifications">🔔</button>
         <button class="nav-item" onclick="navToPage('trip_status.html')" aria-label="Status">📊</button>
@@ -158,18 +151,18 @@
         showToast('Edit functionality coming soon...', 'info');
     }
 
-    // Delete profile
-    function deleteProfile() {
-        pendingAction = 'delete';
-        document.getElementById('modalTitle').textContent = 'Delete Driver';
-        document.getElementById('confirmMessage').textContent = 'Are you sure you want to delete this driver profile? This action cannot be undone.';
-        document.getElementById('confirmBtn').style.background = '#ef4444';
+    // Logout profile
+    function logoutProfile() {
+        pendingAction = 'logout';
+        document.getElementById('modalTitle').textContent = 'Logout';
+        document.getElementById('confirmMessage').textContent = 'Are you sure you want to logout?';
+        document.getElementById('confirmBtn').style.background = '#1F41BB';
         document.getElementById('confirmModal').classList.add('show');
     }
 
     // Confirm action
     function confirmAction() {
-        if (pendingAction === 'delete') {
+        if (pendingAction === 'logout') {
             const confirmBtn = document.getElementById('confirmBtn');
             confirmBtn.classList.add('loading');
             confirmBtn.disabled = true;
@@ -178,10 +171,10 @@
                 confirmBtn.classList.remove('loading');
                 confirmBtn.disabled = false;
                 closeConfirmModal();
-                showToast('Driver profile deleted successfully!', 'success');
+                showToast('Logging out...', 'success');
                 
                 setTimeout(() => {
-                    window.location.href = 'dashboard.html';
+                    window.location.href = 'login.html';
                 }, 1500);
             }, 1500);
         }

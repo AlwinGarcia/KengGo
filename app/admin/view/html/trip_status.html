@@ -12,23 +12,12 @@
 <body class="dashboard-page">
 <main class="dashboard-shell">
 
-    <!-- status bar -->
-    <div class="dashboard-topbar">
-        <div class="top-left">
-            <span class="status-time">9:41</span>
-        </div>
-        <div class="top-right">
-            <span class="status-icons">📶 🔋</span>
-        </div>
-    </div>
-
     <!-- header -->
     <section class="dashboard-header">
-        <div class="avatar">�</div>
         <div class="greeting">
             <div class="greeting-line">Hey, <strong>Admin</strong></div>
         </div>
-        <button class="icon-btn bell" aria-label="Notifications">🔔</button>
+        <button class="icon-btn bell" aria-label="Notifications" onclick="window.location.href='notifications.html'">🔔</button>
     </section>
 
     <!-- page title -->
@@ -39,37 +28,7 @@
 
     <!-- trip status content area -->
     <section style="padding: 0 12px 20px;">
-        <div class="trips-grid">
-            <article class="trip-card" onclick="viewStatus('Shuttle 01')">
-                <div class="trip-card-top">
-                    <div class="icon">🚌</div>
-                    <div class="trip-title">Shuttle 01</div>
-                    <div class="status-dot" style="background: #10b981;"></div>
-                </div>
-                <div class="trip-body">
-                    <div class="route">
-                        <div class="from">↙ From: 72-74 Oxford St.</div>
-                        <div class="to">↗ To: 20 Grosvenor Sq.</div>
-                    </div>
-                    <div class="price"><span>Status:</span><strong>🟢 On Time</strong></div>
-                </div>
-            </article>
-
-            <article class="trip-card" onclick="viewStatus('Shuttle 23')">
-                <div class="trip-card-top">
-                    <div class="icon">🚌</div>
-                    <div class="trip-title">Shuttle 23</div>
-                    <div class="status-dot" style="background: #f59e0b;"></div>
-                </div>
-                <div class="trip-body">
-                    <div class="route">
-                        <div class="from">↙ From: Great Portland St.</div>
-                        <div class="to">↗ To: Baker Street</div>
-                    </div>
-                    <div class="price"><span>Status:</span><strong>🟡 Delayed 5 min</strong></div>
-                </div>
-            </article>
-        </div>
+        <div class="trips-grid" id="statusGrid"></div>
     </section>
 
     <!-- Toast notification -->
@@ -78,7 +37,7 @@
     <!-- bottom navigation bar -->
     <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
         <button class="nav-item" onclick="navToPage('dashboard.html')" aria-label="Dashboard">🏠</button>
-        <button class="nav-item" onclick="navToPage('add.html')" aria-label="Add">➕</button>
+        <button class="nav-item" onclick="navToPage('addTrip.html')" aria-label="Add">➕</button>
         <button class="nav-item" onclick="navToPage('profile.html')" aria-label="Profile">👤</button>
         <button class="nav-item" onclick="navToPage('notifications.html')" aria-label="Notifications">🔔</button>
         <button class="nav-item nav-item--active" onclick="navToPage('trip_status.html')" aria-label="Status">📊</button>
@@ -97,13 +56,97 @@
         }, duration);
     }
 
-    // View status
-    function viewStatus(shuttle) {
-        showToast(`Viewing detailed status for ${shuttle}...`, 'info');
+    const statusGrid = document.getElementById('statusGrid');
+
+    function escapeHtml(value) {
+        return String(value ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    function formatRoute(route) {
+        const parts = String(route || '').split(' to ');
+        return {
+            from: parts[0] || 'N/A',
+            to: parts[1] || 'N/A'
+        };
+    }
+
+    function statusColor(status) {
+        const map = {
+            active: '#10b981',
+            pending: '#f59e0b',
+            inactive: '#ef4444'
+        };
+        return map[String(status || '').toLowerCase()] || '#10b981';
+    }
+
+    function statusText(status) {
+        const map = {
+            active: '🟢 Active',
+            pending: '🟡 Pending',
+            inactive: '🔴 Inactive'
+        };
+        return map[String(status || '').toLowerCase()] || '🟢 Active';
+    }
+
+    function renderStatuses(trips) {
+        if (!Array.isArray(trips) || trips.length === 0) {
+            statusGrid.innerHTML = '<p style="padding: 1rem; color: #666;">No trips found.</p>';
+            return;
+        }
+
+        const cards = trips.map((trip) => {
+            const { from, to } = formatRoute(trip.route);
+            const statusClr = statusColor(trip.status);
+            const statusLabel = statusText(trip.status);
+            return `
+                <article class="trip-card" onclick="viewStatus(${trip.id})">
+                    <div class="trip-card-top">
+                        <div class="icon">🚌</div>
+                        <div class="trip-title">${escapeHtml(trip.shuttle_number || `Shuttle ${trip.id}`)}</div>
+                        <div class="status-dot" style="background: ${statusClr};"></div>
+                    </div>
+                    <div class="trip-body">
+                        <div class="route">
+                            <div class="from">↙ From: ${escapeHtml(from)}</div>
+                            <div class="to">↗ To: ${escapeHtml(to)}</div>
+                        </div>
+                        <div class="price"><span>Status:</span><strong>${statusLabel}</strong></div>
+                    </div>
+                </article>
+            `;
+        });
+
+        statusGrid.innerHTML = cards.join('');
+    }
+
+    async function loadStatuses() {
+        try {
+            statusGrid.innerHTML = '<p style="padding: 1rem; color: #666;">Loading trips...</p>';
+            const response = await fetch('../../../../handlers/trip_api.php?action=list');
+            const data = await response.json();
+            if (!response.ok || !data.success) {
+                throw new Error(data.message || 'Failed to load trips');
+            }
+            renderStatuses(data.data);
+        } catch (error) {
+            statusGrid.innerHTML = '<p style="padding: 1rem; color: #c00;">Could not load trips.</p>';
+            showToast(error.message, 'error');
+        }
+    }
+
+    function viewStatus(id) {
+        showToast('Viewing trip #' + id, 'info');
     }
 
     // Navigation
     function navToPage(page) {
         window.location.href = page;
     }
+
+    loadStatuses();
 </script>

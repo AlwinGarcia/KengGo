@@ -11,7 +11,7 @@
 <body>
 <main class="page-bg">
 
-    <div class="card">
+    <div class="card glass">
         <header class="card-header">
             <h1>Login Admin</h1>
             <p class="subtle">The Fastest SHUTTLE<br><span>Service in Bakakeng</span></p>
@@ -61,28 +61,36 @@
     }
 
     // Login form submission
-    document.getElementById('loginForm').addEventListener('submit', function(e) {
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         const loginBtn = document.getElementById('loginBtn');
-        const email = document.getElementById('email').value;
-        
         loginBtn.classList.add('loading');
         loginBtn.disabled = true;
 
-        // Simulate API call
-        setTimeout(() => {
+        const formData = new FormData(this);
+
+        try {
+            const response = await fetch('../php/login.php', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+                throw new Error(data.message || 'Login failed');
+            }
+
+            showToast('Login successful! Redirecting...', 'success');
+            setTimeout(() => {
+                window.location.href = 'dashboard.php';
+            }, 800);
+        } catch (error) {
+            showToast(error.message, 'error');
+        } finally {
             loginBtn.classList.remove('loading');
             loginBtn.disabled = false;
-            
-            if (email && email.includes('@')) {
-                showToast('Login successful! Redirecting...', 'success');
-                setTimeout(() => {
-                    window.location.href = 'dashboard.html';
-                }, 1500);
-            } else {
-                showToast('Invalid email format', 'error');
-            }
-        }, 1500);
+        }
     });
 
     // Forgot password modal
