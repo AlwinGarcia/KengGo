@@ -1,10 +1,10 @@
 <?php
 // db_connect.php
-$servername = "127.0.0.1";
+$servername = "localhost";
 $username   = "root";
 $password   = "";
 $database   = "kenggo";
-$port       = 3307;
+$port       = 3306;
 
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
