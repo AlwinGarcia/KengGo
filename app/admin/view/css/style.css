@@ -30,7 +30,9 @@ html, body {
     height: 100%;
     margin: 0;
     font-family: var(--font);
-    background: var(--yellow); /* Yellow background like the mobile UI */
+    background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.55), rgba(255,255,255,0)),
+                radial-gradient(circle at 80% 0%, rgba(255,255,255,0.45), rgba(255,255,255,0)),
+                linear-gradient(135deg, #f7d24a, #f2b705);
 }
 
 /* Center the card */
@@ -46,11 +48,18 @@ html, body {
 .card {
     width: 100%;
     max-width: var(--max-card-width);
-    background: var(--yellow);
-    border-radius: 14px;
-    padding: 28px 20px;
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+    padding: 32px 22px;
     color: var(--dark);
     text-align: center;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.18);
+    backdrop-filter: blur(10px);
+}
+
+.card.glass {
+    border: 1px solid rgba(255,255,255,0.24);
+    background: linear-gradient(135deg, rgba(255,255,255,0.16), rgba(255,255,255,0.06));
 }
 
 /* header text */
@@ -199,11 +208,13 @@ html, body {
 .register-page .register-card {
     width: 100%;
     max-width: var(--max-card-width);
-    background: var(--yellow);
-    border-radius: 14px;
-    padding: 28px 20px;
+    background: linear-gradient(145deg, rgba(255,255,255,0.16), rgba(255,255,255,0.06));
+    border-radius: 16px;
+    padding: 32px 22px;
     color: var(--dark);
     text-align: center;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.18);
+    backdrop-filter: blur(10px);
     /* keep the card visually consistent with login */
 }
 
@@ -246,6 +257,26 @@ html, body {
     color: var(--dark);
     box-shadow: 0 6px 16px rgba(0,0,0,0.08);
     transition: all 0.12s ease;
+}
+
+.register-page .select-input {
+    width: 100%;
+    max-width: 320px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    border: 2px solid rgba(31, 65, 187, 0.12);
+    background: var(--light);
+    font-size: 14px;
+    outline: none;
+    color: var(--dark);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+    transition: all 0.12s ease;
+}
+
+.register-page .select-input:focus {
+    transform: translateY(-1px);
+    border-color: var(--blue);
+    box-shadow: 0 8px 22px rgba(31,65,187,0.14);
 }
 
 .register-page .register-form input:focus {

@@ -11,17 +11,10 @@
 <body class="dashboard-page notifications-page">
 <main class="dashboard-shell">
 
-    <!-- status bar -->
-    <div class="dashboard-topbar">
-        <span class="status-time">9:41</span>
-        <span class="status-icons">📶 🔋</span>
-    </div>
-
     <!-- header -->
     <section class="dashboard-header">
-        <div class="avatar">🟩</div>
         <div class="greeting">
-            <div class="greeting-line">Hey, <strong>Admin</strong></div>
+            <div class="greeting-line">Hey, <strong>Gideon</strong></div>
         </div>
         <button class="icon-btn bell" aria-label="Notifications">🔔</button>
     </section>
@@ -30,33 +23,7 @@
     <h2 class="notifications-title">Notifications</h2>
 
     <!-- notifications list -->
-    <section class="notifications-list">
-        <article class="notification-card" onclick="handleNotification(event)">
-            <div class="notification-icon">🔔</div>
-            <div class="notification-content">
-                <div class="notification-title">Trip Updated</div>
-                <div class="notification-time">5 mins ago</div>
-            </div>
-        </article>
-
-        <article class="notification-card" onclick="handleNotification(event)">
-            <div class="notification-icon">🚌</div>
-            <div class="notification-content">
-                <div class="notification-title">New Trip Added</div>
-                <div class="notification-time">20 mins ago</div>
-            </div>
-        </article>
-
-        <article class="notification-card" onclick="handleNotification(event)">
-            <div class="notification-icon">⚠️</div>
-            <div class="notification-content">
-                <div class="notification-title">Trip Cancelled</div>
-                <div class="notification-time">1 hour ago</div>
-            </div>
-        </article>
-
-        <!-- add more notifications as needed -->
-    </section>
+    <section class="notifications-list" id="notificationsList"></section>
 
     <!-- Toast notification -->
     <div class="toast" id="toast"></div>
@@ -64,7 +31,7 @@
     <!-- bottom navigation -->
     <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
         <button class="nav-item" onclick="navToPage('dashboard.html')" aria-label="Dashboard">🏠</button>
-        <button class="nav-item" onclick="navToPage('add.html')" aria-label="Add">➕</button>
+        <button class="nav-item" onclick="navToPage('addTrip.html')" aria-label="Add">➕</button>
         <button class="nav-item" onclick="navToPage('profile.html')" aria-label="Profile">👤</button>
         <button class="nav-item nav-item--active" onclick="navToPage('notifications.html')" aria-label="Notifications">🔔</button>
         <button class="nav-item" onclick="navToPage('trip_status.html')" aria-label="Status">📊</button>
@@ -83,9 +50,78 @@
         }, duration);
     }
 
+    const listEl = document.getElementById('notificationsList');
+
+    function escapeHtml(value) {
+        return String(value ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    function timeSince(dateStr) {
+        const date = new Date(dateStr);
+        const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
+        if (Number.isNaN(seconds)) return '';
+        const intervals = [
+            { label: 'y', secs: 31536000 },
+            { label: 'mo', secs: 2592000 },
+            { label: 'd', secs: 86400 },
+            { label: 'h', secs: 3600 },
+            { label: 'm', secs: 60 },
+        ];
+        for (const { label, secs } of intervals) {
+            const v = Math.floor(seconds / secs);
+            if (v >= 1) return `${v}${label} ago`;
+        }
+        return 'just now';
+    }
+
+    function renderNotifications(items) {
+        if (!Array.isArray(items) || items.length === 0) {
+            listEl.innerHTML = '<p style="padding: 1rem; color: #666;">No notifications yet.</p>';
+            return;
+        }
+
+        const icons = { info: '🔔', warning: '⚠️', alert: '🛑' };
+        const cards = items.map((n) => {
+            const icon = icons[n.type] || '🔔';
+            const title = escapeHtml(n.title);
+            const time = escapeHtml(timeSince(n.created_at));
+            const statusClass = n.status === 'unread' ? 'unread' : '';
+            return `
+                <article class="notification-card ${statusClass}" onclick="handleNotification('${escapeHtml(n.id)}', '${title}')">
+                    <div class="notification-icon">${icon}</div>
+                    <div class="notification-content">
+                        <div class="notification-title">${title}</div>
+                        <div class="notification-time">${time}</div>
+                    </div>
+                </article>
+            `;
+        });
+
+        listEl.innerHTML = cards.join('');
+    }
+
+    async function loadNotifications() {
+        try {
+            listEl.innerHTML = '<p style="padding: 1rem; color: #666;">Loading...</p>';
+            const response = await fetch('../../../../handlers/admin_notifications.php?action=list');
+            const data = await response.json();
+            if (!response.ok || !data.success) {
+                throw new Error(data.message || 'Failed to load notifications');
+            }
+            renderNotifications(data.data);
+        } catch (error) {
+            listEl.innerHTML = '<p style="padding: 1rem; color: #c00;">Could not load notifications.</p>';
+            showToast(error.message, 'error');
+        }
+    }
+
     // Handle notification click
-    function handleNotification(e) {
-        const title = e.currentTarget.querySelector('.notification-title').textContent;
+    function handleNotification(id, title) {
         showToast(`Opened: ${title}`, 'info');
     }
 
@@ -93,4 +129,6 @@
     function navToPage(page) {
         window.location.href = page;
     }
+
+    loadNotifications();
 </script>

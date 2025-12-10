@@ -12,23 +12,13 @@
 <body class="dashboard-page">
 <main class="dashboard-shell">
 
-    <!-- status bar -->
-    <div class="dashboard-topbar">
-        <div class="top-left">
-            <span class="status-time">9:41</span>
-        </div>
-        <div class="top-right">
-            <span class="status-icons">📶 🔋</span>
-        </div>
-    </div>
-
     <!-- header -->
     <section class="dashboard-header">
         <div class="avatar">�</div>
         <div class="greeting">
             <div class="greeting-line">Hey, <strong>Admin</strong></div>
         </div>
-        <button class="icon-btn bell" aria-label="Notifications">🔔</button>
+        <button class="icon-btn bell" aria-label="Notifications" onclick="window.location.href='notifications.html'">🔔</button>
     </section>
 
     <!-- page title -->
@@ -76,7 +66,7 @@
     <!-- bottom navigation bar -->
     <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
         <button class="nav-item" onclick="navToPage('dashboard.html')" aria-label="Dashboard">🏠</button>
-        <button class="nav-item" onclick="navToPage('add.html')" aria-label="Add">➕</button>
+        <button class="nav-item" onclick="navToPage('addTrip.html')" aria-label="Add">➕</button>
         <button class="nav-item" onclick="navToPage('profile.html')" aria-label="Profile">👤</button>
         <button class="nav-item" onclick="navToPage('notifications.html')" aria-label="Notifications">🔔</button>
         <button class="nav-item nav-item--active" onclick="navToPage('trip_status.html')" aria-label="Status">📊</button>

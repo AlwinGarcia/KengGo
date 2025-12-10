@@ -3,7 +3,7 @@
 
 // Enable error reporting for debugging
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+ini_set('display_errors', 0);
 
 // Set headers for JSON response
 header('Content-Type: application/json');

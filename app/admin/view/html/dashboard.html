@@ -11,20 +11,8 @@
 <body class="dashboard-page">
 <main class="dashboard-shell">
 
-    <!-- status bar (mimic mobile top inset) -->
-    <div class="dashboard-topbar">
-        <div class="top-left">
-            <span class="status-time">9:41</span>
-        </div>
-        <div class="top-right">
-            <!-- simple cellular / battery emblems (purely decorative) -->
-            <span class="status-icons">📶 🔋</span>
-        </div>
-    </div>
-
     <!-- header: avatar + greeting + bell -->
     <section class="dashboard-header">
-        <div class="avatar">🟩</div>
         <div class="greeting">
             <div class="greeting-line">Hey, <strong>Gideon</strong></div>
         </div>
@@ -49,86 +37,12 @@
             <h3>Trips Ongoing</h3>
             <div class="trips-actions">
                 <button class="fab small" title="Delete" onclick="window.location.href='deleteTrip.html'">🗑️</button>
-                <button class="fab small" title="Add" onclick="window.location.href='add.html'">➕</button>
+                <button class="fab small" title="Add" onclick="window.location.href='addTrip.html'">➕</button>
             </div>
         </div>
 
         <!-- cards grid -->
-        <div class="trips-grid">
-            <!-- repeat shuttle card (copy/paste for visual) -->
-            <article class="trip-card" onclick="editTrip('Shuttle 01')">
-                <div class="trip-card-top">
-                    <div class="icon">🚌</div>
-                    <div class="trip-title">Shuttle 01</div>
-                    <div class="status-dot"></div>
-                </div>
-
-                <div class="trip-body">
-                    <div class="route">
-                        <div class="from">↙ From: 72-74 Oxford St.</div>
-                        <div class="to">↗ To: 20 Grosvenor Sq.</div>
-                    </div>
-
-                    <div class="price">
-                        <span>Price:</span>
-                        <strong>₱100</strong>
-                    </div>
-                </div>
-            </article>
-
-            <article class="trip-card" onclick="editTrip('Shuttle 23')">
-                <div class="trip-card-top">
-                    <div class="icon">🚌</div>
-                    <div class="trip-title">Shuttle 23</div>
-                    <div class="status-dot"></div>
-                </div>
-
-                <div class="trip-body">
-                    <div class="route">
-                        <div class="from">↙ From: Great Portland St.</div>
-                        <div class="to">↗ To: Baker Street</div>
-                    </div>
-
-                    <div class="price">
-                        <span>Price:</span>
-                        <strong>₱100</strong>
-                    </div>
-                </div>
-            </article>
-
-            <!-- duplicate more cards to match layout -->
-            <article class="trip-card" onclick="editTrip('Shuttle 44')">
-                <div class="trip-card-top">
-                    <div class="icon">🚌</div>
-                    <div class="trip-title">Shuttle 44</div>
-                    <div class="status-dot"></div>
-                </div>
-                <div class="trip-body">
-                    <div class="route">
-                        <div class="from">↙ From: 103 Seymour Pl.</div>
-                        <div class="to">↗ To: London NW1 5BR</div>
-                    </div>
-                    <div class="price"><span>Price:</span><strong>₱100</strong></div>
-                </div>
-            </article>
-
-            <article class="trip-card" onclick="editTrip('Shuttle 67')">
-                <div class="trip-card-top">
-                    <div class="icon">🚌</div>
-                    <div class="trip-title">Shuttle 67</div>
-                    <div class="status-dot"></div>
-                </div>
-                <div class="trip-body">
-                    <div class="route">
-                        <div class="from">↙ From: 377 Durnsford Rd.</div>
-                        <div class="to">↗ To: 136 Buckhold Rd.</div>
-                    </div>
-                    <div class="price"><span>Price:</span><strong>₱100</strong></div>
-                </div>
-            </article>
-
-            <!-- add more copies as needed -->
-        </div>
+        <div class="trips-grid" id="tripsGrid"></div>
     </section>
 
     <!-- Toast notification -->
@@ -137,7 +51,7 @@
     <!-- bottom navigation bar -->
     <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
         <button class="nav-item nav-item--active" onclick="navToPage('dashboard.html')" aria-label="Dashboard">🏠</button>
-        <button class="nav-item" onclick="navToPage('add.html')" aria-label="Add">➕</button>
+        <button class="nav-item" onclick="navToPage('addTrip.html')" aria-label="Add">➕</button>
         <button class="nav-item" onclick="navToPage('profile.html')" aria-label="Profile">👤</button>
         <button class="nav-item" onclick="navToPage('notifications.html')" aria-label="Notifications">🔔</button>
         <button class="nav-item" onclick="navToPage('trip_status.html')" aria-label="Status">📊</button>
@@ -156,12 +70,86 @@
         }, duration);
     }
 
+    const tripsGrid = document.getElementById('tripsGrid');
+
+    function escapeHtml(value) {
+        return String(value ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    function formatPrice(price) {
+        const num = Number(price) || 0;
+        return num.toFixed(2);
+    }
+
+    function formatRoute(route) {
+        const parts = String(route || '').split(' to ');
+        return {
+            from: parts[0] || 'N/A',
+            to: parts[1] || 'N/A'
+        };
+    }
+
+    function renderTrips(trips) {
+        if (!Array.isArray(trips) || trips.length === 0) {
+            tripsGrid.innerHTML = '<p style="text-align: center; padding: 2rem; grid-column: 1/-1; color: #666;">No trips available. Add a new trip to get started!</p>';
+            return;
+        }
+
+        const cards = trips.map((trip) => {
+            const { from, to } = formatRoute(trip.route);
+            const shuttle = escapeHtml(trip.shuttle_number || `Shuttle ${trip.id}`);
+            const statusClass = escapeHtml(String(trip.status || 'active').toLowerCase());
+            return `
+                <article class="trip-card" onclick="editTrip(${trip.id})">
+                    <div class="trip-card-top">
+                        <div class="icon">🚌</div>
+                        <div class="trip-title">${shuttle}</div>
+                        <div class="status-dot ${statusClass}"></div>
+                    </div>
+                    <div class="trip-body">
+                        <div class="route">
+                            <div class="from">↙ From: ${escapeHtml(from)}</div>
+                            <div class="to">↗ To: ${escapeHtml(to)}</div>
+                        </div>
+                        <div class="price">
+                            <span>Price:</span>
+                            <strong>₱${formatPrice(trip.price)}</strong>
+                        </div>
+                    </div>
+                </article>
+            `;
+        });
+
+        tripsGrid.innerHTML = cards.join('');
+    }
+
+    async function loadTrips() {
+        try {
+            tripsGrid.innerHTML = '<p style="text-align: center; padding: 2rem; grid-column: 1/-1; color: #666;">Loading trips...</p>';
+            const response = await fetch('../../../../handlers/trip_api.php?action=list');
+            if (!response.ok) {
+                throw new Error('Failed to fetch trips');
+            }
+            const data = await response.json();
+            if (!data.success) {
+                throw new Error(data.message || 'Unable to load trips');
+            }
+            renderTrips(data.data);
+        } catch (error) {
+            console.error(error);
+            tripsGrid.innerHTML = '<p style="text-align: center; padding: 2rem; grid-column: 1/-1; color: #c00;">Could not load trips. Please try again.</p>';
+            showToast('Could not load trips', 'error');
+        }
+    }
+
     // Edit trip
-    function editTrip(tripName) {
-        showToast(`Editing ${tripName}...`, 'info');
-        setTimeout(() => {
-            window.location.href = 'editTrip.html';
-        }, 800);
+    function editTrip(tripId) {
+        window.location.href = 'editTrip.html?id=' + tripId;
     }
 
     // Welcome menu
@@ -182,4 +170,6 @@
     document.querySelector('.bell').addEventListener('click', function() {
         window.location.href = 'notifications.html';
     });
+
+    loadTrips();
 </script>
