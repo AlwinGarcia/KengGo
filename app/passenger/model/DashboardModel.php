@@ -6,17 +6,24 @@ class DashboardModel {
         $this->conn = $db;
     }
 
-    public function getPassengerTrips($passengerId, $limit = 5) {
-        $sql = "SELECT b.id, s.plate_number, s.route, s.price,
-                       s.trip_date AS destination
-                FROM bookings b
-                JOIN shuttles s ON b.shuttle_id = s.id
-                WHERE b.passenger_id = ?
-                ORDER BY b.booked_at DESC
-                LIMIT ?";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("ii", $passengerId, $limit);
-        $stmt->execute();
-        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    // Fetch all available trips (active shuttles)
+    public function getAvailableTrips() {
+        $sql = "SELECT
+                    s.id AS shuttle_id,
+                    s.shuttle_number,
+                    s.plate_number,
+                    s.route,
+                    s.trip_date,
+                    s.departure_time,
+                    s.arrival_time,
+                    s.price,
+                    s.capacity,
+                    s.status
+                FROM shuttles s
+                WHERE s.status = 'active'
+                ORDER BY s.trip_date ASC, s.departure_time ASC";
+
+        $result = $this->conn->query($sql);
+        return $result->fetch_all(MYSQLI_ASSOC);
     }
 }

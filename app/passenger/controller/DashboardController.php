@@ -14,8 +14,8 @@ class DashboardController {
             exit();
         }
 
-        $passengerId = $_SESSION['passenger_id'];
-        $trips = $this->model->getPassengerTrips($passengerId);
+        // Fetch available trips instead of passenger bookings
+        $trips = $this->model->getAvailableTrips();
 
         include __DIR__ . "/../view/php/dashboard.php";
     }
