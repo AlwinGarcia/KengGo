@@ -16,6 +16,15 @@ class SeatModel {
         return array_column($result->fetch_all(MYSQLI_ASSOC), 'seat_number');
     }
 
+    public function getShuttle($shuttleId) {
+    $sql = "SELECT * FROM shuttles WHERE id = ?";
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bind_param("i", $shuttleId);
+    $stmt->execute();
+    return $stmt->get_result()->fetch_assoc();
+    }
+
+
     // Book a seat
     public function bookSeat($passengerId, $shuttleId, $seatNumber) {
         $sql = "INSERT INTO bookings (passenger_id, shuttle_id, seat_number, status)
