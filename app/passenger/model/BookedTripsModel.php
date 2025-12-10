@@ -121,4 +121,14 @@ class BookedTripsModel {
         }
         return $seats;
     }
+public function getShuttleCapacity($shuttleId) {
+    $sql = "SELECT capacity FROM shuttles WHERE id = ?";
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bind_param('i', $shuttleId);
+    $stmt->execute();
+    $res = $stmt->get_result();
+    $row = $res->fetch_assoc();
+    return $row['capacity'] ?? 12; // fallback to 12 if not found
+}
+
 }

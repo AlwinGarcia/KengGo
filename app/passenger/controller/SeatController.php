@@ -16,10 +16,18 @@ class SeatController {
         }
 
         $shuttleId = $_GET['shuttle_id'] ?? 1;
-        $seats     = $this->model->getBookedSeats($shuttleId); // only booked seats
-        $message   = $_SESSION['seat_message'] ?? null;
+
+        // Get booked seats
+        $seats = $this->model->getBookedSeats($shuttleId); // array of seat numbers
+
+        // Get shuttle capacity
+        $capacity = $this->model->getShuttleCapacity($shuttleId); // new method in BookedTripsModel
+
+        // Get optional message
+        $message = $_SESSION['seat_message'] ?? null;
         unset($_SESSION['seat_message']);
 
+        // Pass all to view
         include __DIR__ . '/../view/php/seat_management.php';
     }
 

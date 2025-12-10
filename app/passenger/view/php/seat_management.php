@@ -50,7 +50,7 @@ $message       = $message ?? null;
         <?php endif; ?>
 
         <div class="seat-grid">
-            <?php for ($i = 1; $i <= 12; $i++): ?>
+            <?php for ($i = 1; $i <= ($capacity ?? 12); $i++): ?>
                 <?php $isBooked = in_array($i, $seats); ?>
                 <button class="seat-btn <?= $isBooked ? 'booked' : '' ?>"
                         onclick="selectSeat(this)"
