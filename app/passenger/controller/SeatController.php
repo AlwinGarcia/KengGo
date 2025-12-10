@@ -1,76 +1,76 @@
 <?php
-require_once __DIR__ . "/../model/SeatModel.php";
+require_once __DIR__ . '/../model/BookedTripsModel.php';
 
 class SeatController {
     private $model;
 
     public function __construct($db) {
-        $this->model = new SeatModel($db);
+        $this->model = new BookedTripsModel($db);
     }
 
+    // Show seat management page
     public function showSeatManagement() {
-        // not logged in
         if (!isset($_SESSION['passenger_id'])) {
-            $_SESSION['error'] = "Please log in to book a seat.";
             header("Location: index.php?page=login");
             exit();
         }
 
-        $shuttleId   = $_GET['shuttle_id'] ?? 1;
+        $shuttleId = $_GET['shuttle_id'] ?? 1;
+        $seats     = $this->model->getBookedSeats($shuttleId); // only booked seats
+        $message   = $_SESSION['seat_message'] ?? null;
+        unset($_SESSION['seat_message']);
+
+        include __DIR__ . '/../view/php/seat_management.php';
+    }
+
+    // Confirm seat booking
+    public function confirmSeat() {
+        if (!isset($_SESSION['passenger_id'])) {
+            header("Location: index.php?page=login");
+            exit();
+        }
+
         $passengerId = $_SESSION['passenger_id'];
-        $message     = null;
+        $shuttleId   = $_GET['shuttle_id'] ?? 1;
+        $seatNumber  = trim($_POST['selected_seat'] ?? '');
 
-        // Shuttle not found
-        $shuttle = $this->model->getShuttle($shuttleId);
-        if (!$shuttle || $shuttle['status'] !== 'active') {
-            $message = " Shuttle not available for booking.";
-            $seats   = [];
-            include __DIR__ . "/../view/php/seat_management.php";
-            return;
+        if (!$seatNumber) {
+            $_SESSION['seat_message'] = "No seat selected.";
+            header("Location: index.php?page=seat-management&shuttle_id={$shuttleId}");
+            exit();
         }
 
-        $shuttleCapacity = $shuttle['capacity'];
-
-        // Handle form submission
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // cancel button handling
-            if (isset($_POST['cancel'])) {
-                header("Location: index.php?page=dashboard");
-                exit();
-            }
-
-            if (isset($_POST['confirm'])) {
-                $seatNumber = intval($_POST['selected_seat']);
-
-                // invalid seat number
-                if ($seatNumber < 1 || $seatNumber > $shuttleCapacity) {
-                    $message = " Invalid seat number selected.";
-                } else {
-                    try {
-                        $success = $this->model->bookSeat($passengerId, $shuttleId, $seatNumber);
-                        if ($success) {
-                            $message = " Seat $seatNumber booked successfully!";
-                        } else {
-                            $message = "Could not book seat $seatNumber.";
-                        }
-                    } catch (mysqli_sql_exception $e) {
-                        //  duplicate booking error
-                        if ($e->getCode() == 1062) {
-                            $message = " Seat $seatNumber is already booked. Please choose another.";
-                            error_log("Duplicate booking attempt: Passenger $passengerId tried seat $seatNumber on shuttle $shuttleId");
-                        } else {
-                            //  database error
-                            $message = " System error occurred. Please try again later.";
-                            error_log("Booking error: " . $e->getMessage());
-                        }
-                    }
-                }
-            }
+        // Check if seat is already booked
+        if ($this->model->isSeatBooked($shuttleId, $seatNumber)) {
+            $_SESSION['seat_message'] = "Seat {$seatNumber} is already booked. Please choose another.";
+            header("Location: index.php?page=seat-management&shuttle_id={$shuttleId}");
+            exit();
         }
 
-        // Get booked seats for rendering
-        $seats = $this->model->getBookedSeats($shuttleId);
+        // Insert or reuse booking
+        $result = $this->model->insertBooking($passengerId, $shuttleId, $seatNumber);
 
-        include __DIR__ . "/../view/php/seat_management.php";
+        switch ($result) {
+            case "duplicate":
+                $_SESSION['seat_message'] = "You already have a booking for this shuttle.";
+                header("Location: index.php?page=seat-management&shuttle_id={$shuttleId}");
+                break;
+
+            case "rebooked":
+                $_SESSION['seat_message'] = "Your cancelled booking has been reactivated with seat {$seatNumber}.";
+                header("Location: index.php?page=booked-trips");
+                break;
+
+            case "success":
+                $_SESSION['seat_message'] = "Seat {$seatNumber} booked successfully!";
+                header("Location: index.php?page=booked-trips");
+                break;
+
+            default:
+                $_SESSION['seat_message'] = "Unable to book seat. Please try again.";
+                header("Location: index.php?page=seat-management&shuttle_id={$shuttleId}");
+                break;
+        }
+        exit();
     }
 }

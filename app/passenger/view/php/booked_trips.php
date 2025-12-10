@@ -1,7 +1,7 @@
 <?php
 $passengerName = $_SESSION['passenger_name'] ?? 'Guest';
 $trips         = $trips ?? [];
-$totalTrips    = $totalTrips ?? 0; // passed from controller
+$totalTrips    = $totalTrips ?? 0;
 ?>
 
 <!DOCTYPE html>
@@ -14,17 +14,16 @@ $totalTrips    = $totalTrips ?? 0; // passed from controller
 </head>
 <body>
     <div class="dashboard-container">
-        <!-- Header -->
         <div class="header">
             <span class="user">Booked Trips for <?= htmlspecialchars($passengerName) ?></span>
             <span class="notif"><i class="fa-regular fa-bell"></i></span>
         </div>
 
-        <!-- Booked Trips Section -->
         <div class="trips-section">
             <div class="trips-title">
                 <?= $showAll ? "All Booked Trips" : "Latest Booked Trips" ?>
             </div>
+
             <div class="trips-grid">
                 <?php if (!empty($trips)): ?>
                     <?php foreach ($trips as $trip): ?>
@@ -39,16 +38,6 @@ $totalTrips    = $totalTrips ?? 0; // passed from controller
                             <span class="trip-fare">Fare: ₱<?= htmlspecialchars($trip['price']) ?></span>
                             <span class="trip-seat">Seat #: <?= htmlspecialchars($trip['seat_number']) ?></span>
                             <span class="trip-status">Status: <?= htmlspecialchars($trip['status']) ?></span>
-
-                            <!-- ✅ Cancel Booking Button -->
-                            <?php if ($trip['status'] === 'booked' && !empty($trip['booking_id'])): ?>
-                                <form method="POST" action="index.php?page=booked-trips<?= $showAll ? '&all=1' : '' ?>">
-                                    <input type="hidden" name="cancel_booking" value="<?= htmlspecialchars($trip['booking_id']) ?>">
-                                    <button type="submit" class="btn-danger" onclick="return confirm('Cancel this booking?');">
-                                        <i class="fa-solid fa-xmark"></i> Cancel Booking
-                                    </button>
-                                </form>
-                            <?php endif; ?>
                         </div>
                     <?php endforeach; ?>
                 <?php else: ?>
@@ -70,20 +59,10 @@ $totalTrips    = $totalTrips ?? 0; // passed from controller
             <?php endif; ?>
         </div>
 
-        <!-- ✅ Back to Dashboard Button -->
         <div class="booked-trips-btn">
             <a href="index.php?page=dashboard" class="btn-primary">
                 <i class="fa-solid fa-house"></i> Back to Dashboard
             </a>
-        </div>
-
-        <!-- Bottom Navigation -->
-        <div class="bottom-nav">
-            <a href="index.php?page=dashboard" class="nav-icon"><i class="fa-solid fa-house"></i></a>
-            <a href="index.php?page=booked-trips" class="nav-icon"><i class="fa-solid fa-clipboard-check"></i></a>
-            <a href="index.php?page=past-trips" class="nav-icon"><i class="fa-solid fa-clock-rotate-left"></i></a>
-            <a href="index.php?page=profile" class="nav-icon"><i class="fa-solid fa-user"></i></a>
-            <a href="index.php?page=settings" class="nav-icon"><i class="fa-solid fa-gear"></i></a>
         </div>
     </div>
 </body>
