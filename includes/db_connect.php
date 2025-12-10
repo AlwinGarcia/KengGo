@@ -4,7 +4,7 @@ $servername = "localhost";
 $username   = "root";
 $password   = "";
 $database   = "kenggo";
-$port       = 3306;
+$port       = 3307;
 
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
