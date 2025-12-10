@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3307
--- Generation Time: Dec 10, 2025 at 02:03 PM
+-- Generation Time: Dec 10, 2025 at 02:35 PM
 -- Server version: 11.5.2-MariaDB
 -- PHP Version: 8.3.14
 
@@ -129,9 +129,10 @@ CREATE TABLE IF NOT EXISTS `bookings` (
   `status` enum('booked','cancelled','completed') DEFAULT 'booked',
   `booked_at` timestamp NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_booking` (`passenger_id`,`shuttle_id`),
   KEY `passenger_id` (`passenger_id`),
   KEY `shuttle_id` (`shuttle_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=29 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=32 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Dumping data for table `bookings`
@@ -141,31 +142,10 @@ INSERT INTO `bookings` (`id`, `passenger_id`, `shuttle_id`, `seat_number`, `stat
 (1, 1, 1, 5, 'booked', '2025-12-09 13:32:17'),
 (2, 2, 1, 6, 'booked', '2025-12-09 13:32:17'),
 (3, 3, 2, 3, 'completed', '2025-12-09 13:32:17'),
-(4, 1, 1, 1, 'booked', '2025-12-10 11:49:16'),
-(5, 1, 1, 2, 'booked', '2025-12-10 11:49:18'),
-(6, 1, 1, 3, 'booked', '2025-12-10 11:49:20'),
-(7, 1, 1, 7, 'booked', '2025-12-10 11:49:20'),
-(8, 1, 1, 10, 'booked', '2025-12-10 12:29:57'),
-(9, 1, 1, 0, 'booked', '2025-12-10 12:30:00'),
-(10, 1, 1, 0, 'booked', '2025-12-10 12:30:01'),
-(11, 1, 1, 0, 'booked', '2025-12-10 12:30:01'),
-(12, 1, 1, 0, 'booked', '2025-12-10 12:30:01'),
-(13, 1, 1, 0, 'booked', '2025-12-10 12:30:02'),
-(14, 1, 1, 0, 'booked', '2025-12-10 12:30:02'),
-(15, 1, 1, 0, 'booked', '2025-12-10 12:30:02'),
-(16, 1, 1, 0, 'booked', '2025-12-10 12:30:52'),
-(17, 1, 1, 0, 'booked', '2025-12-10 12:30:53'),
-(18, 1, 1, 0, 'booked', '2025-12-10 12:30:56'),
-(19, 1, 1, 0, 'booked', '2025-12-10 12:36:58'),
-(20, 1, 1, 0, 'booked', '2025-12-10 12:36:58'),
-(21, 1, 1, 0, 'booked', '2025-12-10 12:36:59'),
-(22, 1, 1, 0, 'booked', '2025-12-10 12:36:59'),
-(23, 1, 1, 9, 'booked', '2025-12-10 12:37:00'),
-(24, 1, 1, 9, 'booked', '2025-12-10 12:42:46'),
-(25, 1, 1, 4, 'booked', '2025-12-10 12:42:49'),
-(26, 1, 1, 11, 'booked', '2025-12-10 12:53:44'),
-(27, 1, 1, 11, 'booked', '2025-12-10 13:45:14'),
-(28, 1, 7, 6, 'booked', '2025-12-10 14:02:28');
+(28, 1, 7, 6, 'booked', '2025-12-10 14:02:28'),
+(29, 1, 9, 6, 'booked', '2025-12-10 14:34:00'),
+(30, 1, 2, 6, 'booked', '2025-12-10 14:34:05'),
+(31, 1, 12, 2, 'booked', '2025-12-10 14:34:09');
 
 -- --------------------------------------------------------
 
