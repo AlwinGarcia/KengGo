@@ -1,9 +1,10 @@
 <?php
-require_once __DIR__ . '/../../../db_connect.php';
-require_once __DIR__ . '/../../../model/Trip.php';
-require_once __DIR__ . '/../../../Session.php';
+require_once __DIR__ . '/../../../includes/Session.php';
+require_once __DIR__ . '/../../../includes/db_connect.php';
+require_once __DIR__ . '/../../model/Trip.php';
 
 $session = new Session();
+
 if (!$session->isLoggedIn() || $session->get('role') !== 'passenger') {
     header("Location: index.php?page=login");
     exit();
@@ -18,37 +19,111 @@ if ($tripId <= 0) {
 }
 
 $trip = $tripModel->getTripById($tripId);
+
 if (empty($trip)) {
     header("Location: index.php?page=trips");
     exit();
 }
 
+// Check if passenger already booked this trip
+$passengerId = $session->get('user_id');
+$bookingCheck = $db->query("SELECT id FROM bookings WHERE passenger_id = $passengerId AND shuttle_id = $tripId");
+$alreadyBooked = $bookingCheck->num_rows > 0;
+
 include __DIR__ . '/../../../shared_layout/header.php';
 include __DIR__ . '/../../../shared_layout/nav.php';
 ?>
 
-<link rel="stylesheet" href="app/passenger/view/css/trip_status.css">
-
-<div class="content">
-    <h1>Trip Details</h1>
-
-    <div class="trip-details-card">
-        <p><strong>Shuttle number:</strong> <?php echo htmlspecialchars($trip['shuttle_number']); ?></p>
-        <p><strong>Plate number:</strong> <?php echo htmlspecialchars($trip['plate_number']); ?></p>
-        <p><strong>Route:</strong> <?php echo htmlspecialchars($trip['route']); ?></p>
-        <p><strong>Date:</strong> <?php echo htmlspecialchars($trip['trip_date']); ?></p>
-        <p><strong>Departure time:</strong> <?php echo htmlspecialchars($trip['departure_time']); ?></p>
-        <p><strong>Arrival time:</strong> <?php echo htmlspecialchars($trip['arrival_time']); ?></p>
-        <p><strong>Capacity:</strong> <?php echo htmlspecialchars($trip['capacity']); ?></p>
-        <p><strong>Price:</strong> <?php echo number_format($trip['price'], 2); ?></p>
-        <p><strong>Status:</strong> <?php echo htmlspecialchars($trip['status']); ?></p>
-        <p><strong>Driver:</strong> <?php echo htmlspecialchars($trip['driver_name'] ?? ''); ?></p>
-        <?php if (!empty($trip['notes'])): ?>
-            <p><strong>Notes:</strong> <?php echo htmlspecialchars($trip['notes']); ?></p>
-        <?php endif; ?>
+<div class="trip-detail-container">
+    <div class="back-link">
+        <a href="?page=trips">&larr; Back to Trips</a>
     </div>
-
-    <p><a href="index.php?page=trips">&laquo; Back to trips</a></p>
+    
+    <h1>Trip Details</h1>
+    
+    <div class="detail-card">
+        <div class="detail-header">
+            <h2><?= htmlspecialchars($trip['shuttle_number']) ?></h2>
+            <span class="status-badge status-<?= strtolower($trip['status']) ?>">
+                <?= ucfirst($trip['status']) ?>
+            </span>
+        </div>
+        
+        <div class="detail-grid">
+            <div class="detail-item">
+                <span class="label">Plate Number:</span>
+                <span class="value"><?= htmlspecialchars($trip['plate_number'] ?? 'N/A') ?></span>
+            </div>
+            
+            <div class="detail-item">
+                <span class="label">Route:</span>
+                <span class="value"><?= htmlspecialchars($trip['route'] ?? ($trip['from_address'] . ' to ' . $trip['to_address'])) ?></span>
+            </div>
+            
+            <div class="detail-item">
+                <span class="label">From:</span>
+                <span class="value"><?= htmlspecialchars($trip['from_address']) ?></span>
+            </div>
+            
+            <div class="detail-item">
+                <span class="label">To:</span>
+                <span class="value"><?= htmlspecialchars($trip['to_address']) ?></span>
+            </div>
+            
+            <div class="detail-item">
+                <span class="label">Date:</span>
+                <span class="value"><?= date('F d, Y', strtotime($trip['trip_date'])) ?></span>
+            </div>
+            
+            <div class="detail-item">
+                <span class="label">Departure Time:</span>
+                <span class="value"><?= date('h:i A', strtotime($trip['depart_time'])) ?></span>
+            </div>
+            
+            <div class="detail-item">
+                <span class="label">Arrival Time:</span>
+                <span class="value"><?= $trip['arrive_time'] ? date('h:i A', strtotime($trip['arrive_time'])) : 'N/A' ?></span>
+            </div>
+            
+            <div class="detail-item">
+                <span class="label">Capacity:</span>
+                <span class="value"><?= $trip['capacity'] ?? $trip['seats_available'] ?> seats</span>
+            </div>
+            
+            <div class="detail-item">
+                <span class="label">Available Seats:</span>
+                <span class="value"><?= $trip['seats_available'] ?> seats</span>
+            </div>
+            
+            <div class="detail-item">
+                <span class="label">Price:</span>
+                <span class="value price">₱<?= number_format($trip['price'], 2) ?></span>
+            </div>
+            
+            <div class="detail-item">
+                <span class="label">Driver:</span>
+                <span class="value"><?= htmlspecialchars($trip['driver_name'] ?? 'Not Assigned') ?></span>
+            </div>
+            
+            <?php if (!empty($trip['notes'])): ?>
+            <div class="detail-item full-width">
+                <span class="label">Notes:</span>
+                <span class="value"><?= nl2br(htmlspecialchars($trip['notes'])) ?></span>
+            </div>
+            <?php endif; ?>
+        </div>
+        
+        <div class="action-buttons">
+            <?php if ($alreadyBooked): ?>
+                <p class="already-booked">✓ You have already booked this trip</p>
+                <a href="?page=booked_trips" class="btn-secondary">View My Bookings</a>
+            <?php elseif ($trip['seats_available'] > 0 && $trip['status'] === 'active'): ?>
+                <a href="?page=seat_management&trip_id=<?= $trip['id'] ?>" class="btn-primary">Book This Trip</a>
+            <?php else: ?>
+                <p class="unavailable">This trip is currently unavailable for booking</p>
+            <?php endif; ?>
+        </div>
+    </div>
 </div>
 
 <?php include __DIR__ . '/../../../shared_layout/footer.php'; ?>
