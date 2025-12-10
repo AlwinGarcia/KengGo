@@ -1,6 +1,7 @@
 <?php
 $passengerName = $_SESSION['passenger_name'] ?? 'Guest';
 $trips         = $trips ?? [];
+$totalTrips    = $totalTrips ?? 0; // passed from controller
 ?>
 
 <!DOCTYPE html>
@@ -13,11 +14,13 @@ $trips         = $trips ?? [];
 </head>
 <body>
     <div class="dashboard-container">
+        <!-- Header -->
         <div class="header">
             <span class="user">Booked Trips for <?= htmlspecialchars($passengerName) ?></span>
             <span class="notif"><i class="fa-regular fa-bell"></i></span>
         </div>
 
+        <!-- Booked Trips Section -->
         <div class="trips-section">
             <div class="trips-title">
                 <?= $showAll ? "All Booked Trips" : "Latest Booked Trips" ?>
@@ -36,6 +39,16 @@ $trips         = $trips ?? [];
                             <span class="trip-fare">Fare: ₱<?= htmlspecialchars($trip['price']) ?></span>
                             <span class="trip-seat">Seat #: <?= htmlspecialchars($trip['seat_number']) ?></span>
                             <span class="trip-status">Status: <?= htmlspecialchars($trip['status']) ?></span>
+
+                            <!-- ✅ Cancel Booking Button -->
+                            <?php if ($trip['status'] === 'booked' && !empty($trip['booking_id'])): ?>
+                                <form method="POST" action="index.php?page=booked-trips<?= $showAll ? '&all=1' : '' ?>">
+                                    <input type="hidden" name="cancel_booking" value="<?= htmlspecialchars($trip['booking_id']) ?>">
+                                    <button type="submit" class="btn-danger" onclick="return confirm('Cancel this booking?');">
+                                        <i class="fa-solid fa-xmark"></i> Cancel Booking
+                                    </button>
+                                </form>
+                            <?php endif; ?>
                         </div>
                     <?php endforeach; ?>
                 <?php else: ?>
@@ -46,13 +59,13 @@ $trips         = $trips ?? [];
 
         <!-- ✅ Toggle Buttons -->
         <div class="booked-trips-btn">
-            <?php if (!$showAll): ?>
+            <?php if (!$showAll && $totalTrips >= 7): ?>
                 <a href="index.php?page=booked-trips&all=1" class="btn-primary">
                     <i class="fa-solid fa-list"></i> See All Bookings
                 </a>
-            <?php else: ?>
+            <?php elseif ($showAll): ?>
                 <a href="index.php?page=booked-trips" class="btn-primary">
-                    <i class="fa-solid fa-rotate-left"></i> Back
+                    <i class="fa-solid fa-rotate-left"></i> Back to Latest 6
                 </a>
             <?php endif; ?>
         </div>
@@ -64,6 +77,7 @@ $trips         = $trips ?? [];
             </a>
         </div>
 
+        <!-- Bottom Navigation -->
         <div class="bottom-nav">
             <a href="index.php?page=dashboard" class="nav-icon"><i class="fa-solid fa-house"></i></a>
             <a href="index.php?page=booked-trips" class="nav-icon"><i class="fa-solid fa-clipboard-check"></i></a>

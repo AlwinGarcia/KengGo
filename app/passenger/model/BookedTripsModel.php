@@ -9,6 +9,7 @@ class BookedTripsModel {
     // Latest 6 bookings
     public function getLatestBookedTrips($passengerId) {
         $sql = "SELECT
+                    b.id AS booking_id,   -- ✅ booking id
                     s.id AS shuttle_id,
                     s.route,
                     s.trip_date,
@@ -34,6 +35,7 @@ class BookedTripsModel {
     // All bookings
     public function getAllBookedTrips($passengerId) {
         $sql = "SELECT
+                    b.id AS booking_id,   -- ✅ booking id
                     s.id AS shuttle_id,
                     s.route,
                     s.trip_date,

@@ -16,12 +16,16 @@ class BookedTripsController {
 
         $passengerId = $_SESSION['passenger_id'];
 
+        // Get all trips first to count them
+        $allTrips   = $this->model->getAllBookedTrips($passengerId);
+        $totalTrips = count($allTrips);
+
         // If ?all=1 is set, show all bookings
         if (isset($_GET['all']) && $_GET['all'] == 1) {
-            $trips = $this->model->getAllBookedTrips($passengerId);
+            $trips   = $allTrips;
             $showAll = true;
         } else {
-            $trips = $this->model->getLatestBookedTrips($passengerId);
+            $trips   = $this->model->getLatestBookedTrips($passengerId);
             $showAll = false;
         }
 
