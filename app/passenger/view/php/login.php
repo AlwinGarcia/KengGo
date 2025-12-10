@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <!-- Use the same CSS you already built -->
-    <link rel="stylesheet" href="../css/passenger/login.css">
+    <link rel="stylesheet" href="/KengGo/app/passenger/view/css/login.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="login-container">
