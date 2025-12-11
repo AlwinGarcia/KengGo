@@ -6,14 +6,14 @@ require_once __DIR__ . "/controller/LoginController.php";
 require_once __DIR__ . "/passenger/controller/DashboardController.php";
 require_once __DIR__ . "/passenger/controller/SeatController.php";
 require_once __DIR__ . "/passenger/controller/BookedTripsController.php";
-require_once __DIR__ . "/passenger/controller/TripsController.php"; // ✅ add TripsController
+require_once __DIR__ . "/passenger/controller/TripsController.php";
 
 // Initialize controllers
 $controller            = new LoginController($conn);
 $dashboardController   = new DashboardController($conn);
 $seatController        = new SeatController($conn);
 $bookedTripsController = new BookedTripsController($conn);
-$tripsController       = new TripsController($conn); // ✅ initialize
+$tripsController       = new TripsController($conn);
 
 // Route based on ?page=
 $page = $_GET['page'] ?? 'login';
@@ -31,11 +31,11 @@ switch ($page) {
         $dashboardController->showDashboard();
         break;
 
-    case 'seat-management': // ✅ loads seat_management.php via SeatController
+    case 'seat-management':
         $seatController->showSeatManagement();
         break;
 
-    case 'seat-confirm': // ✅ handles POST from seat_management.php
+    case 'seat-confirm':
         $seatController->confirmSeat();
         break;
 
@@ -43,7 +43,7 @@ switch ($page) {
         $bookedTripsController->showBookedTrips();
         break;
 
-    case 'trips': // ✅ new route for Past Trips
+    case 'trips':
         $tripsController->showPastTrips();
         break;
 
