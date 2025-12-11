@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Driver Profile — KengGo Shuttle</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/driver_dashboard.css" />
+</head>
+
+<body class="driver-page">
+<main class="driver-shell">
+
+    <!-- header -->
+    <section class="driver-header">
+        <div class="greeting">
+            <div class="greeting-line">Profile</div>
+        </div>
+        <button class="icon-btn bell" aria-label="Notifications" onclick="window.location.href='notifications.html'">🔔</button>
+    </section>
+
+    <!-- Profile Card -->
+    <section class="profile-card" aria-label="Driver profile">
+        <div class="profile-top">
+            <div class="profile-avatar">👨‍✈️</div>
+            <div class="profile-meta">
+                <h1 class="profile-name" id="profileName">Driver Name</h1>
+                <div class="profile-role">Professional Driver</div>
+                <div class="profile-status">
+                    <span class="status-pill status-active" id="statusBadge">Active</span>
+                </div>
+            </div>
+
+            <div class="profile-actions">
+                <button class="btn small edit-btn" title="Edit profile" onclick="editProfile()">Edit</button>
+                <button class="btn small delete-btn" title="Logout" onclick="logoutProfile()">Logout</button>
+            </div>
+        </div>
+
+        <div class="profile-body">
+            <div class="profile-section">
+                <h3>Personal Information</h3>
+                <div class="info-row">
+                    <div class="info-label">Driver Code</div>
+                    <div class="info-value" id="driverCode">DRV-0000</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Email</div>
+                    <div class="info-value" id="profileEmail">email@example.com</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Phone</div>
+                    <div class="info-value" id="profilePhone">+63 9XX XXX XXXX</div>
+                </div>
+            </div>
+
+            <div class="profile-section">
+                <h3>License & Vehicle</h3>
+                <div class="info-row">
+                    <div class="info-label">License Number</div>
+                    <div class="info-value" id="licenseNumber">DL-2025-001</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">License Expiry</div>
+                    <div class="info-value" id="licenseExpiry">2026-06-15</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Vehicle Number</div>
+                    <div class="info-value" id="vehicleNumber">SLU-001</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Plate Number</div>
+                    <div class="info-value" id="plateNumber">ABC-1234</div>
+                </div>
+            </div>
+
+            <div class="profile-section">
+                <h3>Experience & Rating</h3>
+                <div class="info-row">
+                    <div class="info-label">Years of Experience</div>
+                    <div class="info-value" id="experienceYears">5</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Rating</div>
+                    <div class="info-value" id="profileRating">⭐ 4.80/5.00</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Total Trips</div>
+                    <div class="info-value" id="totalTrips">150</div>
+                </div>
+            </div>
+
+            <div class="profile-section">
+                <h3>Account Activity</h3>
+                <div class="info-row">
+                    <div class="info-label">Last Login</div>
+                    <div class="info-value" id="lastLogin">2025-12-10 08:30 AM</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Account Status</div>
+                    <div class="info-value" id="accountStatus">Active</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Toast notification -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Confirm Modal -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal">
+            <h3 id="modalTitle">Logout</h3>
+            <p id="confirmMessage">Are you sure you want to logout?</p>
+            <div class="modal-actions">
+                <button class="modal-actions btn-cancel" onclick="closeConfirmModal()">Cancel</button>
+                <button class="modal-actions btn-confirm" id="confirmBtn" onclick="confirmAction()">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- bottom navigation bar -->
+    <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
+        <button class="nav-item" onclick="navToPage('dashboard.html')" aria-label="Dashboard">🏠</button>
+        <button class="nav-item" onclick="navToPage('trips.html')" aria-label="Trips">🚌</button>
+        <button class="nav-item nav-item--active" onclick="navToPage('profile.html')" aria-label="Profile">👤</button>
+        <button class="nav-item" onclick="navToPage('notifications.html')" aria-label="Notifications">🔔</button>
+        <button class="nav-item" onclick="navToPage('documents.html')" aria-label="Documents">📄</button>
+    </nav>
+
+</main>
+
+<script>
+    let pendingAction = null;
+
+    function showToast(message, type = 'info', duration = 3000) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.className = `toast show ${type}`;
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, duration);
+    }
+
+    function editProfile() {
+        showToast('Edit functionality coming soon...', 'info');
+    }
+
+    function logoutProfile() {
+        pendingAction = 'logout';
+        document.getElementById('modalTitle').textContent = 'Logout';
+        document.getElementById('confirmMessage').textContent = 'Are you sure you want to logout?';
+        document.getElementById('confirmBtn').style.background = '#1F41BB';
+        document.getElementById('confirmModal').classList.add('show');
+    }
+
+    function confirmAction() {
+        if (pendingAction === 'logout') {
+            const confirmBtn = document.getElementById('confirmBtn');
+            confirmBtn.classList.add('loading');
+            confirmBtn.disabled = true;
+
+            setTimeout(() => {
+                confirmBtn.classList.remove('loading');
+                confirmBtn.disabled = false;
+                closeConfirmModal();
+                showToast('Logging out...', 'success');
+                
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 1500);
+            }, 1500);
+        }
+    }
+
+    function closeConfirmModal() {
+        document.getElementById('confirmModal').classList.remove('show');
+    }
+
+    function navToPage(page) {
+        window.location.href = page;
+    }
+
+    // Load driver profile data
+    function loadProfileData() {
+        // In a real app, fetch from API based on session
+        // For now, display mock data
+        document.getElementById('profileName').textContent = 'Driver A';
+        document.getElementById('driverCode').textContent = 'DRV-1001';
+        document.getElementById('profileEmail').textContent = 'driverA@example.com';
+        document.getElementById('profilePhone').textContent = '+63 912 345 6789';
+        document.getElementById('licenseNumber').textContent = 'DL-2025-001';
+        document.getElementById('licenseExpiry').textContent = '2026-06-15';
+        document.getElementById('vehicleNumber').textContent = 'SLU-001';
+        document.getElementById('plateNumber').textContent = 'ABC-1234';
+        document.getElementById('experienceYears').textContent = '5';
+        document.getElementById('profileRating').textContent = '⭐ 4.80/5.00';
+        document.getElementById('totalTrips').textContent = '150';
+        document.getElementById('lastLogin').textContent = '2025-12-10 08:30 AM';
+    }
+
+    document.addEventListener('DOMContentLoaded', loadProfileData);
+
+    document.getElementById('confirmModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeConfirmModal();
+        }
+    });
+</script>
+
+</body>
+</html>

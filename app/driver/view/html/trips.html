@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>My Trips — KengGo Shuttle</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/driver_dashboard.css" />
+</head>
+<body class="driver-page">
+<main class="driver-shell">
+
+    <!-- header -->
+    <section class="driver-header">
+        <div class="greeting">
+            <div class="greeting-line">My Trips</div>
+        </div>
+        <button class="icon-btn bell" aria-label="Notifications" onclick="navToPage('notifications.html')">🔔</button>
+    </section>
+
+    <!-- Filter/Sort section -->
+    <section style="padding: 0 12px 12px;">
+        <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+            <select id="statusFilter" onchange="filterTrips()" style="flex: 1; padding: 10px 12px; border: 1px solid rgba(31,65,187,0.12); border-radius: 10px; font-size: 14px; background: white;">
+                <option value="all">All Status</option>
+                <option value="active">Active</option>
+                <option value="completed">Completed</option>
+                <option value="pending">Pending</option>
+                <option value="cancelled">Cancelled</option>
+            </select>
+            <button onclick="refreshTrips()" style="background: var(--blue); color: white; border: none; padding: 10px 14px; border-radius: 10px; cursor: pointer; font-weight: 600;">🔄</button>
+        </div>
+
+        <!-- Stats cards -->
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px;">
+            <div style="background: white; padding: 12px; border-radius: 10px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.06);">
+                <div style="font-size: 24px; font-weight: 700; color: var(--blue);" id="totalTrips">0</div>
+                <div style="font-size: 11px; color: var(--gray);">Total</div>
+            </div>
+            <div style="background: white; padding: 12px; border-radius: 10px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.06);">
+                <div style="font-size: 24px; font-weight: 700; color: #10b981;" id="activeTrips">0</div>
+                <div style="font-size: 11px; color: var(--gray);">Active</div>
+            </div>
+            <div style="background: white; padding: 12px; border-radius: 10px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.06);">
+                <div style="font-size: 24px; font-weight: 700; color: #f59e0b;" id="todayTrips">0</div>
+                <div style="font-size: 11px; color: var(--gray);">Today</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- trips grid -->
+    <section class="trips-section">
+        <div class="trips-grid" id="tripsGrid"></div>
+    </section>
+
+    <!-- Toast notification -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Trip Detail Modal -->
+    <div class="modal-overlay" id="tripModal">
+        <div class="modal" style="max-width: 400px;">
+            <h3>Trip Details</h3>
+            <div id="tripDetails" style="text-align: left; font-size: 13px; line-height: 1.6;">
+                <!-- Details will be populated here -->
+            </div>
+            <div class="modal-actions">
+                <button class="modal-actions btn-cancel" onclick="closeTripModal()">Close</button>
+                <button class="modal-actions btn-confirm" onclick="startTrip()" id="startTripBtn" style="background: #10b981;">Start Trip</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- bottom navigation bar -->
+    <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
+        <button class="nav-item" onclick="navToPage('dashboard.html')" aria-label="Dashboard">🏠</button>
+        <button class="nav-item nav-item--active" onclick="navToPage('trips.html')" aria-label="Trips">🚌</button>
+        <button class="nav-item" onclick="navToPage('profile.html')" aria-label="Profile">👤</button>
+        <button class="nav-item" onclick="navToPage('notifications.html')" aria-label="Notifications">🔔</button>
+        <button class="nav-item" onclick="navToPage('documents.html')" aria-label="Documents">📄</button>
+    </nav>
+
+</main>
+
+<script>
+    let allTrips = [];
+    let selectedTripId = null;
+
+    function showToast(message, type = 'info', duration = 3000) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.className = `toast show ${type}`;
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, duration);
+    }
+
+    function navToPage(page) {
+        window.location.href = page;
+    }
+
+    function escapeHtml(value) {
+        return String(value ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    function formatPrice(price) {
+        const num = Number(price) || 0;
+        return num.toFixed(2);
+    }
+
+    function formatDate(dateStr) {
+        if (!dateStr) return 'N/A';
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    function formatTime(timeStr) {
+        if (!timeStr) return 'N/A';
+        const [hours, minutes] = timeStr.split(':');
+        const hour = parseInt(hours);
+        const ampm = hour >= 12 ? 'PM' : 'AM';
+        const displayHour = hour % 12 || 12;
+        return `${displayHour}:${minutes} ${ampm}`;
+    }
+
+    function getStatusColor(status) {
+        const colors = {
+            active: '#10b981',
+            pending: '#f59e0b',
+            completed: '#3b82f6',
+            cancelled: '#ef4444'
+        };
+        return colors[status] || '#10b981';
+    }
+
+    function getStatusText(status) {
+        const texts = {
+            active: '🟢 Active',
+            pending: '🟡 Pending',
+            completed: '🔵 Completed',
+            cancelled: '🔴 Cancelled'
+        };
+        return texts[status] || status;
+    }
+
+    function renderTrips(trips) {
+        const tripsGrid = document.getElementById('tripsGrid');
+        if (!Array.isArray(trips) || trips.length === 0) {
+            tripsGrid.innerHTML = '<p style="text-align: center; padding: 2rem; grid-column: 1/-1; color: #666;">No trips found.</p>';
+            return;
+        }
+
+        const cards = trips.map((trip) => {
+            const shuttle = escapeHtml(trip.shuttle_number || `Trip ${trip.id}`);
+            const fromAddr = escapeHtml(trip.from_address || 'Start');
+            const toAddr = escapeHtml(trip.to_address || 'End');
+            const status = escapeHtml(String(trip.status || 'pending').toLowerCase());
+            return `
+                <article class="trip-card" onclick="viewTripDetails(${trip.id})">
+                    <div class="trip-card-top">
+                        <div class="icon">🚌</div>
+                        <div class="trip-title">${shuttle}</div>
+                        <div class="status-dot" style="background: ${getStatusColor(status)};"></div>
+                    </div>
+                    <div class="trip-body">
+                        <div class="route">
+                            <div class="from" style="font-size: 11px;">📍 ${fromAddr}</div>
+                            <div class="to" style="font-size: 11px;">📍 ${toAddr}</div>
+                        </div>
+                        <div class="route" style="margin-top: 6px;">
+                            <div class="from" style="font-size: 11px;">📅 ${formatDate(trip.trip_date)}</div>
+                            <div class="to" style="font-size: 11px;">🕐 ${formatTime(trip.depart_time)}</div>
+                        </div>
+                        <div class="price">
+                            <span>${getStatusText(status)}</span>
+                            <strong>₱${formatPrice(trip.price)}</strong>
+                        </div>
+                    </div>
+                </article>
+            `;
+        });
+
+        tripsGrid.innerHTML = cards.join('');
+    }
+
+    function updateStats(trips) {
+        const total = trips.length;
+        const active = trips.filter(t => t.status === 'active').length;
+        const today = trips.filter(t => {
+            const tripDate = new Date(t.trip_date);
+            const now = new Date();
+            return tripDate.toDateString() === now.toDateString();
+        }).length;
+
+        document.getElementById('totalTrips').textContent = total;
+        document.getElementById('activeTrips').textContent = active;
+        document.getElementById('todayTrips').textContent = today;
+    }
+
+    function filterTrips() {
+        const statusFilter = document.getElementById('statusFilter').value;
+        
+        let filtered = allTrips;
+        if (statusFilter !== 'all') {
+            filtered = allTrips.filter(t => t.status === statusFilter);
+        }
+
+        renderTrips(filtered);
+    }
+
+    function viewTripDetails(tripId) {
+        const trip = allTrips.find(t => t.id === tripId);
+        if (!trip) return;
+
+        selectedTripId = tripId;
+        const details = `
+            <div style="margin-bottom: 12px;">
+                <strong style="color: var(--dark);">Shuttle:</strong> ${escapeHtml(trip.shuttle_number || 'N/A')}<br>
+                <strong style="color: var(--dark);">Status:</strong> ${getStatusText(trip.status)}<br>
+                <strong style="color: var(--dark);">Date:</strong> ${formatDate(trip.trip_date)}<br>
+                <strong style="color: var(--dark);">Departure:</strong> ${formatTime(trip.depart_time)}<br>
+                <strong style="color: var(--dark);">Arrival:</strong> ${formatTime(trip.arrive_time)}<br>
+                <strong style="color: var(--dark);">From:</strong> ${escapeHtml(trip.from_address || 'N/A')}<br>
+                <strong style="color: var(--dark);">To:</strong> ${escapeHtml(trip.to_address || 'N/A')}<br>
+                <strong style="color: var(--dark);">Price:</strong> ₱${formatPrice(trip.price)}<br>
+                <strong style="color: var(--dark);">Seats:</strong> ${trip.seats_available || 0}<br>
+                ${trip.notes ? `<strong style="color: var(--dark);">Notes:</strong> ${escapeHtml(trip.notes)}` : ''}
+            </div>
+        `;
+
+        document.getElementById('tripDetails').innerHTML = details;
+        
+        // Show/hide start button based on status
+        const startBtn = document.getElementById('startTripBtn');
+        if (trip.status === 'pending') {
+            startBtn.style.display = 'inline-block';
+            startBtn.textContent = 'Start Trip';
+        } else if (trip.status === 'active') {
+            startBtn.style.display = 'inline-block';
+            startBtn.textContent = 'Complete Trip';
+            startBtn.style.background = '#3b82f6';
+        } else {
+            startBtn.style.display = 'none';
+        }
+
+        document.getElementById('tripModal').classList.add('show');
+    }
+
+    function closeTripModal() {
+        document.getElementById('tripModal').classList.remove('show');
+        selectedTripId = null;
+    }
+
+    function startTrip() {
+        if (!selectedTripId) return;
+
+        const trip = allTrips.find(t => t.id === selectedTripId);
+        if (!trip) return;
+
+        const newStatus = trip.status === 'pending' ? 'active' : 'completed';
+        
+        showToast(`Trip ${newStatus === 'active' ? 'started' : 'completed'} successfully!`, 'success');
+        closeTripModal();
+        
+        // In production, update via API
+        setTimeout(() => {
+            loadTrips();
+        }, 1500);
+    }
+
+    async function loadTrips() {
+        try {
+            document.getElementById('tripsGrid').innerHTML = '<p style="text-align: center; padding: 2rem;">Loading trips...</p>';
+            
+            // Fetch trips assigned to this driver
+            const response = await fetch('../../../../handlers/trip_api.php?action=list');
+            if (!response.ok) throw new Error('Failed to load trips');
+            
+            const data = await response.json();
+            if (data.success) {
+                allTrips = data.data || [];
+                updateStats(allTrips);
+                renderTrips(allTrips);
+            } else {
+                showToast(data.message || 'Failed to load trips', 'error');
+            }
+        } catch (error) {
+            console.error(error);
+            showToast('Error loading trips', 'error');
+            document.getElementById('tripsGrid').innerHTML = '<p style="text-align: center; padding: 2rem; color: #c00;">Could not load trips.</p>';
+        }
+    }
+
+    function refreshTrips() {
+        showToast('Refreshing trips...', 'info');
+        loadTrips();
+    }
+
+    // Close modal on outside click
+    document.getElementById('tripModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeTripModal();
+        }
+    });
+
+    loadTrips();
+</script>
+
+</body>
+</html>

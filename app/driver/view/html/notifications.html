@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Notifications — KengGo Shuttle</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/driver_dashboard.css" />
+</head>
+<body class="driver-page">
+<main class="driver-shell">
+
+    <!-- header -->
+    <section class="driver-header">
+        <div class="greeting">
+            <div class="greeting-line">Notifications</div>
+        </div>
+        <button class="icon-btn" aria-label="Mark all as read" onclick="markAllAsRead()" title="Mark all as read">✓</button>
+    </section>
+
+    <!-- Filter tabs -->
+    <section style="padding: 0 12px 12px;">
+        <div style="display: flex; gap: 8px; background: white; padding: 6px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.06);">
+            <button class="filter-tab active" data-filter="all" onclick="filterNotifications('all')">All</button>
+            <button class="filter-tab" data-filter="unread" onclick="filterNotifications('unread')">Unread</button>
+            <button class="filter-tab" data-filter="trip" onclick="filterNotifications('trip')">Trips</button>
+            <button class="filter-tab" data-filter="system" onclick="filterNotifications('system')">System</button>
+        </div>
+    </section>
+
+    <style>
+        .filter-tab {
+            flex: 1;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 8px;
+            background: transparent;
+            color: var(--gray);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .filter-tab.active {
+            background: var(--blue);
+            color: white;
+        }
+        .filter-tab:hover:not(.active) {
+            background: rgba(31,65,187,0.08);
+        }
+        .notification-card {
+            background: white;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        .notification-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        .notification-card.unread {
+            border-left: 4px solid var(--blue);
+            background: linear-gradient(to right, rgba(31,65,187,0.05), white);
+        }
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        .notification-icon.trip {
+            background: linear-gradient(180deg,#e9f2ff,#cfe4ff);
+        }
+        .notification-icon.system {
+            background: linear-gradient(180deg,#fff7ed,#fed7aa);
+        }
+        .notification-icon.alert {
+            background: linear-gradient(180deg,#fee2e2,#fecaca);
+        }
+        .notification-content {
+            flex: 1;
+            min-width: 0;
+        }
+        .notification-title {
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--dark);
+            margin-bottom: 4px;
+        }
+        .notification-message {
+            font-size: 13px;
+            color: var(--gray);
+            line-height: 1.4;
+            margin-bottom: 6px;
+        }
+        .notification-time {
+            font-size: 11px;
+            color: #9ca3af;
+        }
+        .notification-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .notification-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .notification-btn.primary {
+            background: var(--blue);
+            color: white;
+        }
+        .notification-btn.secondary {
+            background: var(--light);
+            color: var(--dark);
+        }
+        .unread-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--blue);
+        }
+    </style>
+
+    <!-- notifications list -->
+    <section style="padding: 0 12px 20px;" id="notificationsContainer">
+        <div id="notificationsList"></div>
+    </section>
+
+    <!-- Toast notification -->
+    <div class="toast" id="toast"></div>
+
+    <!-- bottom navigation bar -->
+    <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
+        <button class="nav-item" onclick="navToPage('dashboard.html')" aria-label="Dashboard">🏠</button>
+        <button class="nav-item" onclick="navToPage('trips.html')" aria-label="Trips">🚌</button>
+        <button class="nav-item" onclick="navToPage('profile.html')" aria-label="Profile">👤</button>
+        <button class="nav-item nav-item--active" onclick="navToPage('notifications.html')" aria-label="Notifications">🔔</button>
+        <button class="nav-item" onclick="navToPage('documents.html')" aria-label="Documents">📄</button>
+    </nav>
+
+</main>
+
+<script>
+    let allNotifications = [];
+    let currentFilter = 'all';
+
+    function showToast(message, type = 'info', duration = 3000) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.className = `toast show ${type}`;
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, duration);
+    }
+
+    function navToPage(page) {
+        window.location.href = page;
+    }
+
+    function escapeHtml(value) {
+        return String(value ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    function timeSince(dateStr) {
+        const date = new Date(dateStr);
+        const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
+        if (Number.isNaN(seconds)) return '';
+        
+        const intervals = [
+            { label: 'year', secs: 31536000 },
+            { label: 'month', secs: 2592000 },
+            { label: 'day', secs: 86400 },
+            { label: 'hour', secs: 3600 },
+            { label: 'minute', secs: 60 },
+        ];
+        
+        for (const { label, secs } of intervals) {
+            const v = Math.floor(seconds / secs);
+            if (v >= 1) return `${v} ${label}${v > 1 ? 's' : ''} ago`;
+        }
+        return 'just now';
+    }
+
+    function getNotificationIcon(type) {
+        const icons = {
+            trip: '🚌',
+            system: '⚙️',
+            alert: '⚠️',
+            info: 'ℹ️',
+            success: '✅'
+        };
+        return icons[type] || '🔔';
+    }
+
+    function renderNotifications(notifications) {
+        const listEl = document.getElementById('notificationsList');
+        
+        if (!Array.isArray(notifications) || notifications.length === 0) {
+            listEl.innerHTML = '<p style="text-align: center; padding: 2rem; color: #666;">No notifications yet.</p>';
+            return;
+        }
+
+        const cards = notifications.map((notif) => {
+            const icon = getNotificationIcon(notif.type || 'info');
+            const iconClass = notif.type || 'system';
+            const unreadClass = notif.status === 'unread' ? 'unread' : '';
+            const unreadBadge = notif.status === 'unread' ? '<div class="unread-badge"></div>' : '';
+            
+            return `
+                <div class="notification-card ${unreadClass}" onclick="markAsRead(${notif.id})">
+                    ${unreadBadge}
+                    <div class="notification-icon ${iconClass}">${icon}</div>
+                    <div class="notification-content">
+                        <div class="notification-title">${escapeHtml(notif.title)}</div>
+                        <div class="notification-message">${escapeHtml(notif.message)}</div>
+                        <div class="notification-time">${timeSince(notif.created_at)}</div>
+                        ${notif.action_url ? `
+                            <div class="notification-actions">
+                                <button class="notification-btn primary" onclick="handleAction('${notif.action_url}', event)">View Details</button>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        });
+
+        listEl.innerHTML = cards.join('');
+    }
+
+    function filterNotifications(filter) {
+        currentFilter = filter;
+        
+        // Update active tab
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.classList.remove('active');
+            if (tab.dataset.filter === filter) {
+                tab.classList.add('active');
+            }
+        });
+
+        let filtered = allNotifications;
+        
+        if (filter === 'unread') {
+            filtered = allNotifications.filter(n => n.status === 'unread');
+        } else if (filter !== 'all') {
+            filtered = allNotifications.filter(n => n.type === filter);
+        }
+
+        renderNotifications(filtered);
+    }
+
+    function markAsRead(notifId) {
+        const notif = allNotifications.find(n => n.id === notifId);
+        if (!notif || notif.status === 'read') return;
+
+        // Update locally
+        notif.status = 'read';
+        
+        // Re-render current filter
+        filterNotifications(currentFilter);
+        
+        // In production, update via API
+        // fetch(`/api/notifications/${notifId}/read`, { method: 'POST' });
+    }
+
+    function markAllAsRead() {
+        const unreadCount = allNotifications.filter(n => n.status === 'unread').length;
+        
+        if (unreadCount === 0) {
+            showToast('No unread notifications', 'info');
+            return;
+        }
+
+        allNotifications.forEach(n => n.status = 'read');
+        filterNotifications(currentFilter);
+        showToast(`Marked ${unreadCount} notification${unreadCount > 1 ? 's' : ''} as read`, 'success');
+    }
+
+    function handleAction(url, event) {
+        event.stopPropagation();
+        window.location.href = url;
+    }
+
+    async function loadNotifications() {
+        try {
+            // Mock notifications for demo
+            // In production, fetch from API: /handlers/driver_notifications.php?action=list
+            allNotifications = [
+                {
+                    id: 1,
+                    title: 'New Trip Assignment',
+                    message: 'You have been assigned to Shuttle 01 departing at 7:30 AM tomorrow.',
+                    type: 'trip',
+                    status: 'unread',
+                    created_at: new Date(Date.now() - 1800000).toISOString(), // 30 mins ago
+                    action_url: 'trips.html'
+                },
+                {
+                    id: 2,
+                    title: 'Trip Completed',
+                    message: 'Your trip to SLU Maryheights has been marked as completed. Great job!',
+                    type: 'success',
+                    status: 'read',
+                    created_at: new Date(Date.now() - 7200000).toISOString(), // 2 hours ago
+                    action_url: null
+                },
+                {
+                    id: 3,
+                    title: 'Document Expiring Soon',
+                    message: 'Your driver license will expire in 30 days. Please renew it.',
+                    type: 'alert',
+                    status: 'unread',
+                    created_at: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
+                    action_url: 'documents.html'
+                },
+                {
+                    id: 4,
+                    title: 'System Maintenance',
+                    message: 'Scheduled maintenance will occur tonight at 2 AM. System will be unavailable for 1 hour.',
+                    type: 'system',
+                    status: 'read',
+                    created_at: new Date(Date.now() - 172800000).toISOString(), // 2 days ago
+                    action_url: null
+                },
+                {
+                    id: 5,
+                    title: 'Rating Update',
+                    message: 'Your rating has been updated to 4.85/5.00. Keep up the excellent service!',
+                    type: 'info',
+                    status: 'read',
+                    created_at: new Date(Date.now() - 259200000).toISOString(), // 3 days ago
+                    action_url: 'profile.html'
+                }
+            ];
+
+            renderNotifications(allNotifications);
+        } catch (error) {
+            console.error(error);
+            showToast('Error loading notifications', 'error');
+        }
+    }
+
+    loadNotifications();
+</script>
+
+</body>
+</html>

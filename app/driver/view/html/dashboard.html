@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Driver Dashboard — KengGo Shuttle</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/driver_dashboard.css" />
+</head>
+<body class="driver-page">
+<main class="driver-shell">
+
+    <!-- header: greeting + bell -->
+    <section class="driver-header">
+        <div class="greeting">
+            <div class="greeting-line">Hey, <strong id="driverName">Driver</strong></div>
+        </div>
+        <button class="icon-btn bell" aria-label="Notifications" onclick="navToPage('notifications.html')">🔔</button>
+    </section>
+
+    <!-- welcome card -->
+    <section class="welcome-card" aria-label="Welcome">
+        <div class="welcome-left">
+            <h2>Welcome Driver</h2>
+            <div class="card-info">
+                <span class="meta" id="driverCodeLabel">Driver Code</span>
+                <div class="id-value" id="driverCode">DRV-0000</div>
+            </div>
+        </div>
+        <button class="card-more" aria-label="More options" onclick="showWelcomeMenu(event)">⋯</button>
+    </section>
+
+    <!-- Assignments heading -->
+    <section class="trips-section">
+        <div class="trips-header">
+            <h3>Assigned Trips</h3>
+        </div>
+
+        <!-- cards grid -->
+        <div class="trips-grid" id="tripsGrid"></div>
+    </section>
+
+    <!-- Toast notification -->
+    <div class="toast" id="toast"></div>
+
+    <!-- bottom navigation bar -->
+    <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
+        <button class="nav-item nav-item--active" onclick="navToPage('dashboard.html')" aria-label="Dashboard">🏠</button>
+        <button class="nav-item" onclick="navToPage('trips.html')" aria-label="Trips">🚌</button>
+        <button class="nav-item" onclick="navToPage('profile.html')" aria-label="Profile">👤</button>
+        <button class="nav-item" onclick="navToPage('notifications.html')" aria-label="Notifications">🔔</button>
+        <button class="nav-item" onclick="navToPage('documents.html')" aria-label="Documents">📄</button>
+    </nav>
+
+</main>
+
+<script>
+    function showToast(message, type = 'info', duration = 3000) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.className = `toast show ${type}`;
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, duration);
+    }
+
+    function navToPage(page) {
+        window.location.href = page;
+    }
+
+    function showWelcomeMenu(e) {
+        e.preventDefault();
+        showToast('Account settings available in profile', 'info');
+        setTimeout(() => {
+            window.location.href = 'profile.html';
+        }, 800);
+    }
+
+    function escapeHtml(value) {
+        return String(value ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    function formatPrice(price) {
+        const num = Number(price) || 0;
+        return num.toFixed(2);
+    }
+
+    function formatDate(dateStr) {
+        if (!dateStr) return 'N/A';
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    function renderTrips(trips) {
+        const tripsGrid = document.getElementById('tripsGrid');
+        if (!Array.isArray(trips) || trips.length === 0) {
+            tripsGrid.innerHTML = '<p style="text-align: center; padding: 2rem; grid-column: 1/-1; color: #666;">No assigned trips yet.</p>';
+            return;
+        }
+
+        const cards = trips.map((trip) => {
+            const shuttle = escapeHtml(trip.shuttle_number || `Trip ${trip.id}`);
+            const route = escapeHtml(`${trip.from_address || 'Start'} → ${trip.to_address || 'End'}`);
+            const status = escapeHtml(String(trip.status || 'pending').toLowerCase());
+            return `
+                <article class="trip-card" onclick="viewTrip(${trip.id})">
+                    <div class="trip-card-top">
+                        <div class="icon">🚌</div>
+                        <div class="trip-title">${shuttle}</div>
+                        <div class="status-dot" style="background: ${getStatusColor(status)};"></div>
+                    </div>
+                    <div class="trip-body">
+                        <div class="route">
+                            <div class="from" style="font-size: 11px;">${route}</div>
+                            <div class="to" style="font-size: 11px;">${formatDate(trip.trip_date)}</div>
+                        </div>
+                        <div class="price">
+                            <span>₱${formatPrice(trip.price)}</span>
+                            <strong>${trip.depart_time || 'TBD'}</strong>
+                        </div>
+                    </div>
+                </article>
+            `;
+        });
+
+        tripsGrid.innerHTML = cards.join('');
+    }
+
+    function getStatusColor(status) {
+        const colors = {
+            active: '#10b981',
+            pending: '#f59e0b',
+            completed: '#3b82f6',
+            cancelled: '#ef4444'
+        };
+        return colors[status] || '#10b981';
+    }
+
+    function viewTrip(tripId) {
+        window.location.href = `trip_detail.html?id=${tripId}`;
+    }
+
+    async function loadDashboard() {
+        try {
+            // In a real app, fetch driver data from session/API
+            // For now, display welcome message
+            document.getElementById('driverName').textContent = 'Driver';
+            document.getElementById('driverCode').textContent = 'DRV-1001';
+            
+            // Load assigned trips
+            const response = await fetch('../../../../handlers/driver_api.php?action=list');
+            if (!response.ok) throw new Error('Failed to load trips');
+            
+            const data = await response.json();
+            if (data.success) {
+                renderTrips(data.data.slice(0, 5) || []);
+            }
+        } catch (error) {
+            console.error(error);
+            showToast('Could not load data', 'error');
+        }
+    }
+
+    loadDashboard();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>My Documents — KengGo Shuttle</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/driver_dashboard.css" />
+</head>
+<body class="driver-page">
+<main class="driver-shell">
+
+    <!-- header -->
+    <section class="driver-header">
+        <div class="greeting">
+            <div class="greeting-line">My Documents</div>
+        </div>
+        <button class="icon-btn bell" aria-label="Notifications" onclick="navToPage('notifications.html')">🔔</button>
+    </section>
+
+    <style>
+        .document-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            transition: all 0.2s ease;
+        }
+        .document-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        .doc-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .doc-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            background: linear-gradient(180deg,#e9f2ff,#cfe4ff);
+        }
+        .doc-info {
+            flex: 1;
+        }
+        .doc-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 4px;
+        }
+        .doc-status {
+            font-size: 12px;
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-weight: 600;
+        }
+        .doc-status.valid {
+            background: linear-gradient(180deg,#e9f9ef,#d8f1e3);
+            color: #0a6a2a;
+        }
+        .doc-status.expiring {
+            background: linear-gradient(180deg,#fff7ed,#fed7aa);
+            color: #92400e;
+        }
+        .doc-status.expired {
+            background: linear-gradient(180deg,#fee2e2,#fecaca);
+            color: #991b1b;
+        }
+        .doc-status.pending {
+            background: linear-gradient(180deg,#f3f4f6,#e5e7eb);
+            color: #374151;
+        }
+        .doc-details {
+            font-size: 13px;
+            color: var(--gray);
+            line-height: 1.6;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px dashed rgba(0,0,0,0.06);
+        }
+        .doc-detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+        .doc-detail-label {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        .doc-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .doc-btn {
+            flex: 1;
+            padding: 10px 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .doc-btn.primary {
+            background: var(--blue);
+            color: white;
+        }
+        .doc-btn.primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(31,65,187,0.3);
+        }
+        .doc-btn.secondary {
+            background: var(--light);
+            color: var(--dark);
+        }
+        .doc-btn.secondary:hover {
+            background: #e5e9f5;
+        }
+        .upload-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 12px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        }
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+        .upload-text {
+            font-size: 14px;
+            color: var(--gray);
+            margin-bottom: 16px;
+        }
+        .upload-btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: var(--blue);
+            color: white;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(31,65,187,0.3);
+        }
+    </style>
+
+    <!-- documents section -->
+    <section style="padding: 0 12px 20px;">
+        
+        <!-- Upload section -->
+        <div class="upload-section" onclick="uploadDocument()">
+            <div class="upload-icon">📤</div>
+            <div class="upload-text">Upload New Document</div>
+            <div class="upload-btn">Choose File</div>
+        </div>
+
+        <!-- Documents list -->
+        <div id="documentsList">
+            <!-- Driver's License -->
+            <div class="document-card">
+                <div class="doc-header">
+                    <div class="doc-icon">🪪</div>
+                    <div class="doc-info">
+                        <div class="doc-title">Driver's License</div>
+                        <span class="doc-status expiring">⚠️ Expiring Soon</span>
+                    </div>
+                </div>
+                <div class="doc-details">
+                    <div class="doc-detail-row">
+                        <span class="doc-detail-label">License Number:</span>
+                        <span>DL-2025-001</span>
+                    </div>
+                    <div class="doc-detail-row">
+                        <span class="doc-detail-label">Issue Date:</span>
+                        <span>June 15, 2023</span>
+                    </div>
+                    <div class="doc-detail-row">
+                        <span class="doc-detail-label">Expiry Date:</span>
+                        <span style="color: #f59e0b; font-weight: 600;">June 15, 2026</span>
+                    </div>
+                    <div class="doc-detail-row">
+                        <span class="doc-detail-label">Days Remaining:</span>
+                        <span style="color: #f59e0b; font-weight: 600;">186 days</span>
+                    </div>
+                </div>
+                <div class="doc-actions">
+                    <button class="doc-btn primary" onclick="viewDocument(1)">View</button>
+                    <button class="doc-btn secondary" onclick="renewDocument(1)">Renew</button>
+                </div>
+            </div>
+
+            <!-- Vehicle Registration -->
+            <div class="document-card">
+                <div class="doc-header">
+                    <div class="doc-icon">🚗</div>
+                    <div class="doc-info">
+                        <div class="doc-title">Vehicle Registration (OR/CR)</div>
+                        <span class="doc-status valid">✓ Valid</span>
+                    </div>
+                </div>
+                <div class="doc-details">
+                    <div class="doc-detail-row">
+                        <span class="doc-detail-label">Vehicle:</span>
+                        <span>SLU-001</span>
+                    </div>
+                    <div class="doc-detail-row">
+                        <span class="doc-detail-label">Plate Number:</span>
+                        <span>ABC-1234</span>
+                    </div>
+                    <div class="doc-detail-row">
+                        <span class="doc-detail-label">Registration Date:</span>
+                        <span>January 10, 2025</span>
+                    </div>
+                    <div class="doc-detail-row">
+                        <span class="doc-detail-label">Expiry Date:</span>
+                        <span style="color: #0a6a2a; font-weight: 600;">January 10, 2026</span>
+                    </div>
+                </div>
+                <div class="doc-actions">
+                    <button class="doc-btn primary" onclick="viewDocument(2)">View</button>
+                    <button class="doc-btn secondary" onclick="downloadDocument(2)">Download</button>
+                </div>
+            </div>
+
+            <!-- Insurance -->
+            <div class="document-card">
+                <div class="doc-header">
+                    <div class="doc-icon">🛡️</div>
+                    <div class="doc-info">
+                        <div class="doc-title">Vehicle Insurance</div>
+                        <span class="doc-status valid">✓ Valid</span>
+                    </div>
+                </div>
+                <div class="doc-details">
+                    <div class="doc-detail-row">
+                        <span class="doc-detail-label">Policy Number:</span>
+                        <span>INS-2025-789</span>
+                    </div>
+                    <div class="doc-detail-row">
+                        <span class="doc-detail-label">Provider:</span>
+                        <span>Philippine Insurance Co.</span>
+                    </div>
+                    <div class="doc-detail-row">
+                        <span class="doc-detail-label">Coverage:</span>
+                        <span>Comprehensive</span>
+                    </div>
+                    <div class="doc-detail-row">
+                        <span class="doc-detail-label">Expiry Date:</span>
+                        <span style="color: #0a6a2a; font-weight: 600;">October 30, 2025</span>
+                    </div>
+                </div>
+                <div class="doc-actions">
+                    <button class="doc-btn primary" onclick="viewDocument(3)">View</button>
+                    <button class="doc-btn secondary" onclick="downloadDocument(3)">Download</button>
+                </div>
+            </div>
+
+            <!-- Medical Certificate -->
+            <div class="document-card">
+                <div class="doc-header">
+                    <div class="doc-icon">🏥</div>
+                    <div class="doc-info">
+                        <div class="doc-title">Medical Certificate</div>
+                        <span class="doc-status valid">✓ Valid</span>
+                    </div>
+                </div>
+                <div class="doc-details">
+                    <div class="doc-detail-row">
+                        <span class="doc-detail-label">Certificate No:</span>
+                        <span>MED-2025-456</span>
+                    </div>
+                    <div class="doc-detail-row">
+                        <span class="doc-detail-label">Issued By:</span>
+                        <span>Baguio General Hospital</span>
+                    </div>
+                    <div class="doc-detail-row">
+                        <span class="doc-detail-label">Issue Date:</span>
+                        <span>February 5, 2025</span>
+                    </div>
+                    <div class="doc-detail-row">
+                        <span class="doc-detail-label">Expiry Date:</span>
+                        <span style="color: #0a6a2a; font-weight: 600;">February 5, 2026</span>
+                    </div>
+                </div>
+                <div class="doc-actions">
+                    <button class="doc-btn primary" onclick="viewDocument(4)">View</button>
+                    <button class="doc-btn secondary" onclick="downloadDocument(4)">Download</button>
+                </div>
+            </div>
+
+            <!-- Drug Test -->
+            <div class="document-card">
+                <div class="doc-header">
+                    <div class="doc-icon">💉</div>
+                    <div class="doc-info">
+                        <div class="doc-title">Drug Test Certificate</div>
+                        <span class="doc-status valid">✓ Valid</span>
+                    </div>
+                </div>
+                <div class="doc-details">
+                    <div class="doc-detail-row">
+                        <span class="doc-detail-label">Test Date:</span>
+                        <span>March 12, 2025</span>
+                    </div>
+                    <div class="doc-detail-row">
+                        <span class="doc-detail-label">Result:</span>
+                        <span style="color: #0a6a2a; font-weight: 600;">Negative</span>
+                    </div>
+                    <div class="doc-detail-row">
+                        <span class="doc-detail-label">Lab:</span>
+                        <span>City Health Laboratory</span>
+                    </div>
+                    <div class="doc-detail-row">
+                        <span class="doc-detail-label">Valid Until:</span>
+                        <span style="color: #0a6a2a; font-weight: 600;">September 12, 2025</span>
+                    </div>
+                </div>
+                <div class="doc-actions">
+                    <button class="doc-btn primary" onclick="viewDocument(5)">View</button>
+                    <button class="doc-btn secondary" onclick="downloadDocument(5)">Download</button>
+                </div>
+            </div>
+
+            <!-- NBI Clearance -->
+            <div class="document-card">
+                <div class="doc-header">
+                    <div class="doc-icon">📋</div>
+                    <div class="doc-info">
+                        <div class="doc-title">NBI Clearance</div>
+                        <span class="doc-status pending">⏳ Pending</span>
+                    </div>
+                </div>
+                <div class="doc-details">
+                    <div class="doc-detail-row">
+                        <span class="doc-detail-label">Application Date:</span>
+                        <span>December 1, 2025</span>
+                    </div>
+                    <div class="doc-detail-row">
+                        <span class="doc-detail-label">Status:</span>
+                        <span style="color: #374151; font-weight: 600;">Processing</span>
+                    </div>
+                    <div class="doc-detail-row">
+                        <span class="doc-detail-label">Expected:</span>
+                        <span>December 15, 2025</span>
+                    </div>
+                </div>
+                <div class="doc-actions">
+                    <button class="doc-btn primary" onclick="checkStatus(6)">Check Status</button>
+                    <button class="doc-btn secondary" onclick="uploadDocument()">Upload When Ready</button>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Toast notification -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Document Viewer Modal -->
+    <div class="modal-overlay" id="docModal">
+        <div class="modal" style="max-width: 500px;">
+            <h3 id="docModalTitle">Document Preview</h3>
+            <div id="docModalContent" style="text-align: center; padding: 20px;">
+                <div style="font-size: 64px; margin-bottom: 16px;">📄</div>
+                <p style="color: var(--gray); font-size: 14px;">Document preview would appear here</p>
+                <p style="color: var(--gray); font-size: 13px; margin-top: 12px;">In a production environment, this would display the actual document image or PDF.</p>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-actions btn-cancel" onclick="closeDocModal()">Close</button>
+                <button class="modal-actions btn-confirm" onclick="downloadCurrentDoc()">Download</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- bottom navigation bar -->
+    <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
+        <button class="nav-item" onclick="navToPage('dashboard.html')" aria-label="Dashboard">🏠</button>
+        <button class="nav-item" onclick="navToPage('trips.html')" aria-label="Trips">🚌</button>
+        <button class="nav-item" onclick="navToPage('profile.html')" aria-label="Profile">👤</button>
+        <button class="nav-item" onclick="navToPage('notifications.html')" aria-label="Notifications">🔔</button>
+        <button class="nav-item nav-item--active" onclick="navToPage('documents.html')" aria-label="Documents">📄</button>
+    </nav>
+
+</main>
+
+<script>
+    let currentDocId = null;
+
+    function showToast(message, type = 'info', duration = 3000) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.className = `toast show ${type}`;
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, duration);
+    }
+
+    function navToPage(page) {
+        window.location.href = page;
+    }
+
+    function uploadDocument() {
+        showToast('Upload functionality coming soon...', 'info');
+        // In production: open file picker and upload to server
+    }
+
+    function viewDocument(docId) {
+        currentDocId = docId;
+        const docTitles = {
+            1: "Driver's License",
+            2: "Vehicle Registration",
+            3: "Vehicle Insurance",
+            4: "Medical Certificate",
+            5: "Drug Test Certificate",
+            6: "NBI Clearance"
+        };
+        
+        document.getElementById('docModalTitle').textContent = docTitles[docId] || 'Document';
+        document.getElementById('docModal').classList.add('show');
+    }
+
+    function closeDocModal() {
+        document.getElementById('docModal').classList.remove('show');
+        currentDocId = null;
+    }
+
+    function downloadDocument(docId) {
+        showToast('Downloading document...', 'success');
+        // In production: trigger actual download
+    }
+
+    function downloadCurrentDoc() {
+        if (currentDocId) {
+            downloadDocument(currentDocId);
+            closeDocModal();
+        }
+    }
+
+    function renewDocument(docId) {
+        showToast('Redirecting to renewal portal...', 'info');
+        // In production: redirect to LTO or appropriate renewal site
+    }
+
+    function checkStatus(docId) {
+        showToast('Checking document status...', 'info');
+        // In production: check with NBI or relevant agency API
+    }
+
+    // Close modal on outside click
+    document.getElementById('docModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeDocModal();
+        }
+    });
+</script>
+
+</body>
+</html>

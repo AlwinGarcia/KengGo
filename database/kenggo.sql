@@ -181,22 +181,36 @@ INSERT INTO `complaints` (`id`, `passenger_id`, `details`, `status`, `created_at
 DROP TABLE IF EXISTS `drivers`;
 CREATE TABLE IF NOT EXISTS `drivers` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `driver_code` varchar(20) NOT NULL,
   `name` varchar(100) NOT NULL,
-  `email` varchar(100) NOT NULL,
+  `email` varchar(150) NOT NULL,
   `password` varchar(255) NOT NULL,
+  `license_number` varchar(50) NOT NULL,
+  `license_expiry` date DEFAULT NULL,
+  `phone` varchar(20) DEFAULT NULL,
   `vehicle_number` varchar(50) DEFAULT NULL,
+  `plate_number` varchar(50) DEFAULT NULL,
+  `status` enum('active','inactive','suspended') DEFAULT 'active',
+  `experience_years` int(11) DEFAULT 0,
+  `rating` decimal(3,2) DEFAULT 0.00,
+  `total_trips` int(11) DEFAULT 0,
+  `last_login` timestamp NULL DEFAULT NULL,
+  `notes` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
-  UNIQUE KEY `email` (`email`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+  UNIQUE KEY `email` (`email`),
+  UNIQUE KEY `driver_code` (`driver_code`),
+  UNIQUE KEY `license_number` (`license_number`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `drivers`
 --
 
-INSERT INTO `drivers` (`id`, `name`, `email`, `password`, `vehicle_number`, `created_at`) VALUES
-(1, 'Driver A', 'driverA@example.com', 'pass', 'SLU-001', '2025-12-09 13:32:17'),
-(2, 'Driver B', 'driverB@example.com', 'pass', 'SLU-002', '2025-12-09 13:32:17');
+INSERT INTO `drivers` (`id`, `driver_code`, `name`, `email`, `password`, `license_number`, `phone`, `vehicle_number`, `plate_number`, `status`, `experience_years`, `rating`, `total_trips`, `created_at`, `updated_at`) VALUES
+(1, 'DRV-1001', 'Driver A', 'driverA@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9iu1IJ5AZtQ.f1q5lIYFSi', 'DL-2025-001', '2026-06-15', '+63 912 345 6789', 'SLU-001', 'ABC-1234', 'active', 5, 4.80, 150, '2025-12-09 13:32:17', '2025-12-10 11:10:18'),
+(2, 'DRV-1002', 'Driver B', 'driverB@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9iu1IJ5AZtQ.f1q5lIYFSi', 'DL-2025-002', '2026-08-20', '+63 912 345 6790', 'SLU-002', 'XYZ-5678', 'active', 3, 4.65, 98, '2025-12-09 13:32:17', '2025-12-10 11:10:18');
 
 -- --------------------------------------------------------
 
