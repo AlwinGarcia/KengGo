@@ -63,14 +63,7 @@ $trips         = $trips ?? [];
         </div>
 
         <!-- Bottom Navigation -->
-        <div class="bottom-nav">
-            <a href="index.php?page=dashboard" class="nav-icon"><i class="fa-solid fa-house"></i></a>
-            <a href="index.php?page=seat-management&shuttle_id=1" class="nav-icon"><i class="fa-regular fa-location-dot"></i></a>
-            <a href="index.php?page=booked-trips" class="nav-icon"><i class="fa-solid fa-clipboard-check"></i></a>
-            <a href="index.php?page=past-trips" class="nav-icon"><i class="fa-solid fa-clock-rotate-left"></i></a> <!-- ✅ updated -->
-            <a href="index.php?page=profile" class="nav-icon"><i class="fa-solid fa-user"></i></a>
-            <a href="index.php?page=settings" class="nav-icon"><i class="fa-solid fa-gear"></i></a>
-        </div>
+
     </div>
 </body>
 </html>
