@@ -17,7 +17,9 @@
       <h1 class="login-title">Login as Pilot</h1>
       <p class="login-sub">The Fastest SHUTTLE Service in Bakakeng</p>
 
-      <form class="login-form" method="post" action="../php/login.php">
+      <div id="error-banner" class="error-banner" role="alert" aria-live="polite"></div>
+
+      <form id="loginForm" class="login-form" action="/app/driver/php/login.php" method="POST" novalidate>
         <div class="form-group">
           <label for="email">Email</label>
           <input type="email" id="email" name="email" placeholder="Enter your email" required />
@@ -37,5 +39,26 @@
       </form>
     </section>
   </main>
+
+  <script>
+    (function showLoginError() {
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get('error');
+      if (!code) return;
+
+      const messages = {
+        invalid: 'Invalid email or password. Please try again.',
+        missing: 'Email and password are required.',
+        unauth: 'Please sign in to continue.'
+      };
+
+      const banner = document.getElementById('error-banner');
+      const message = messages[code];
+      if (!banner || !message) return;
+
+      banner.textContent = message;
+      banner.classList.add('show');
+    })();
+  </script>
 </body>
 </html>

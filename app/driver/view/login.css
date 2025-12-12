@@ -48,6 +48,22 @@ body.pilot-login-page {
   color: var(--dark);
 }
 
+.error-banner {
+  display: none;
+  margin: 0 0 16px 0;
+  padding: 12px;
+  border-radius: 10px;
+  background: #ffe8e6;
+  border: 1px solid #f5b5ae;
+  color: #9b1c1c;
+  font-size: 14px;
+  text-align: left;
+}
+
+.error-banner.show {
+  display: block;
+}
+
 .login-form {
   display: flex;
   flex-direction: column;

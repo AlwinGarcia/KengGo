@@ -275,31 +275,50 @@
         renderNotifications(filtered);
     }
 
-    function markAsRead(notifId) {
+    async function markAsRead(notifId) {
         const notif = allNotifications.find(n => n.id === notifId);
         if (!notif || notif.status === 'read') return;
 
-        // Update locally
         notif.status = 'read';
-        
-        // Re-render current filter
         filterNotifications(currentFilter);
-        
-        // In production, update via API
-        // fetch(`/api/notifications/${notifId}/read`, { method: 'POST' });
+
+        const body = new URLSearchParams();
+        body.append('action', 'mark_read');
+        body.append('id', notifId);
+
+            try {
+                await fetch('/handlers/driver_api.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body
+            });
+        } catch (err) {
+            console.error(err);
+        }
     }
 
-    function markAllAsRead() {
-        const unreadCount = allNotifications.filter(n => n.status === 'unread').length;
-        
+    async function markAllAsRead() {
+        const unread = allNotifications.filter(n => n.status === 'unread');
+        const unreadCount = unread.length;
+
         if (unreadCount === 0) {
             showToast('No unread notifications', 'info');
             return;
         }
 
+        // Optimistically update UI
         allNotifications.forEach(n => n.status = 'read');
         filterNotifications(currentFilter);
         showToast(`Marked ${unreadCount} notification${unreadCount > 1 ? 's' : ''} as read`, 'success');
+
+        // Persist
+        try {
+            for (const n of unread) {
+                await markAsRead(n.id);
+            }
+        } catch (err) {
+            console.error(err);
+        }
     }
 
     function handleAction(url, event) {
@@ -308,60 +327,23 @@
     }
 
     async function loadNotifications() {
-        try {
-            // Mock notifications for demo
-            // In production, fetch from API: /handlers/driver_notifications.php?action=list
-            allNotifications = [
-                {
-                    id: 1,
-                    title: 'New Trip Assignment',
-                    message: 'You have been assigned to Shuttle 01 departing at 7:30 AM tomorrow.',
-                    type: 'trip',
-                    status: 'unread',
-                    created_at: new Date(Date.now() - 1800000).toISOString(), // 30 mins ago
-                    action_url: 'trips.html'
-                },
-                {
-                    id: 2,
-                    title: 'Trip Completed',
-                    message: 'Your trip to SLU Maryheights has been marked as completed. Great job!',
-                    type: 'success',
-                    status: 'read',
-                    created_at: new Date(Date.now() - 7200000).toISOString(), // 2 hours ago
-                    action_url: null
-                },
-                {
-                    id: 3,
-                    title: 'Document Expiring Soon',
-                    message: 'Your driver license will expire in 30 days. Please renew it.',
-                    type: 'alert',
-                    status: 'unread',
-                    created_at: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
-                    action_url: 'documents.html'
-                },
-                {
-                    id: 4,
-                    title: 'System Maintenance',
-                    message: 'Scheduled maintenance will occur tonight at 2 AM. System will be unavailable for 1 hour.',
-                    type: 'system',
-                    status: 'read',
-                    created_at: new Date(Date.now() - 172800000).toISOString(), // 2 days ago
-                    action_url: null
-                },
-                {
-                    id: 5,
-                    title: 'Rating Update',
-                    message: 'Your rating has been updated to 4.85/5.00. Keep up the excellent service!',
-                    type: 'info',
-                    status: 'read',
-                    created_at: new Date(Date.now() - 259200000).toISOString(), // 3 days ago
-                    action_url: 'profile.html'
-                }
-            ];
+        const listEl = document.getElementById('notificationsList');
+        listEl.innerHTML = '<p style="text-align: center; padding: 2rem; color: #666;">Loading notifications...</p>';
 
-            renderNotifications(allNotifications);
+        try {
+                const res = await fetch('/handlers/driver_api.php?action=notifications');
+            if (res.status === 401) {
+                window.location.href = '../login.html?error=unauth';
+                return;
+            }
+            const data = await res.json();
+            if (!data.success) throw new Error(data.message || 'Failed to load notifications');
+
+            allNotifications = data.data || [];
+            filterNotifications(currentFilter);
         } catch (error) {
             console.error(error);
+            listEl.innerHTML = '<p style="text-align: center; padding: 2rem; color: #c00;">Could not load notifications.</p>';
             showToast('Error loading notifications', 'error');
         }
     }

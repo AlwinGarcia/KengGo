@@ -168,7 +168,7 @@
                 showToast('Logging out...', 'success');
                 
                 setTimeout(() => {
-                    window.location.href = 'login.html';
+                    window.location.href = '/app/driver/php/logout.php';
                 }, 1500);
             }, 1500);
         }
@@ -182,22 +182,41 @@
         window.location.href = page;
     }
 
-    // Load driver profile data
-    function loadProfileData() {
-        // In a real app, fetch from API based on session
-        // For now, display mock data
-        document.getElementById('profileName').textContent = 'Driver A';
-        document.getElementById('driverCode').textContent = 'DRV-1001';
-        document.getElementById('profileEmail').textContent = 'driverA@example.com';
-        document.getElementById('profilePhone').textContent = '+63 912 345 6789';
-        document.getElementById('licenseNumber').textContent = 'DL-2025-001';
-        document.getElementById('licenseExpiry').textContent = '2026-06-15';
-        document.getElementById('vehicleNumber').textContent = 'SLU-001';
-        document.getElementById('plateNumber').textContent = 'ABC-1234';
-        document.getElementById('experienceYears').textContent = '5';
-        document.getElementById('profileRating').textContent = '⭐ 4.80/5.00';
-        document.getElementById('totalTrips').textContent = '150';
-        document.getElementById('lastLogin').textContent = '2025-12-10 08:30 AM';
+    // Load driver profile data from API
+    async function loadProfileData() {
+        try {
+            const res = await fetch('/handlers/driver_api.php?action=profile');
+            if (res.status === 401) {
+                window.location.href = '../login.html?error=unauth';
+                return;
+            }
+            const data = await res.json();
+            if (!data.success) throw new Error(data.message || 'Failed to load profile');
+
+            const d = data.data;
+            document.getElementById('profileName').textContent = d.name || 'Driver';
+            document.getElementById('driverCode').textContent = d.driver_code || '';
+            document.getElementById('profileEmail').textContent = d.email || '';
+            document.getElementById('profilePhone').textContent = d.phone || '—';
+            document.getElementById('licenseNumber').textContent = d.license_number || '—';
+            document.getElementById('licenseExpiry').textContent = d.license_expiry || '—';
+            document.getElementById('vehicleNumber').textContent = d.vehicle_number || '—';
+            document.getElementById('plateNumber').textContent = d.plate_number || '—';
+            document.getElementById('experienceYears').textContent = d.experience_years ?? '0';
+
+            const rating = Number(d.rating || 0).toFixed(2);
+            document.getElementById('profileRating').textContent = `⭐ ${rating}/5.00`;
+            document.getElementById('totalTrips').textContent = d.total_trips ?? 0;
+            document.getElementById('lastLogin').textContent = d.last_login || '—';
+
+            const statusBadge = document.getElementById('statusBadge');
+            statusBadge.textContent = (d.status || 'active').charAt(0).toUpperCase() + (d.status || 'active').slice(1);
+            statusBadge.className = `status-pill status-${(d.status || 'active').toLowerCase()}`;
+            document.getElementById('accountStatus').textContent = statusBadge.textContent;
+        } catch (err) {
+            console.error(err);
+            showToast('Could not load profile', 'error');
+        }
     }
 
     document.addEventListener('DOMContentLoaded', loadProfileData);

@@ -85,6 +85,9 @@
 <script>
     let allTrips = [];
     let selectedTripId = null;
+    const urlParams = new URLSearchParams(window.location.search);
+    const autoTripId = parseInt(urlParams.get('id'), 10) || null;
+    let autoTripOpened = false;
 
     function showToast(message, type = 'info', duration = 3000) {
         const toast = document.getElementById('toast');
@@ -159,7 +162,7 @@
             const shuttle = escapeHtml(trip.shuttle_number || `Trip ${trip.id}`);
             const fromAddr = escapeHtml(trip.from_address || 'Start');
             const toAddr = escapeHtml(trip.to_address || 'End');
-            const status = escapeHtml(String(trip.status || 'pending').toLowerCase());
+            const status = escapeHtml(String(trip.view_status || 'pending').toLowerCase());
             return `
                 <article class="trip-card" onclick="viewTripDetails(${trip.id})">
                     <div class="trip-card-top">
@@ -190,7 +193,7 @@
 
     function updateStats(trips) {
         const total = trips.length;
-        const active = trips.filter(t => t.status === 'active').length;
+        const active = trips.filter(t => t.view_status === 'active').length;
         const today = trips.filter(t => {
             const tripDate = new Date(t.trip_date);
             const now = new Date();
@@ -207,7 +210,7 @@
         
         let filtered = allTrips;
         if (statusFilter !== 'all') {
-            filtered = allTrips.filter(t => t.status === statusFilter);
+            filtered = allTrips.filter(t => t.view_status === statusFilter);
         }
 
         renderTrips(filtered);
@@ -221,7 +224,7 @@
         const details = `
             <div style="margin-bottom: 12px;">
                 <strong style="color: var(--dark);">Shuttle:</strong> ${escapeHtml(trip.shuttle_number || 'N/A')}<br>
-                <strong style="color: var(--dark);">Status:</strong> ${getStatusText(trip.status)}<br>
+                <strong style="color: var(--dark);">Status:</strong> ${getStatusText(trip.view_status)}<br>
                 <strong style="color: var(--dark);">Date:</strong> ${formatDate(trip.trip_date)}<br>
                 <strong style="color: var(--dark);">Departure:</strong> ${formatTime(trip.depart_time)}<br>
                 <strong style="color: var(--dark);">Arrival:</strong> ${formatTime(trip.arrive_time)}<br>
@@ -237,10 +240,10 @@
         
         // Show/hide start button based on status
         const startBtn = document.getElementById('startTripBtn');
-        if (trip.status === 'pending') {
+        if (trip.view_status === 'pending') {
             startBtn.style.display = 'inline-block';
             startBtn.textContent = 'Start Trip';
-        } else if (trip.status === 'active') {
+        } else if (trip.view_status === 'active') {
             startBtn.style.display = 'inline-block';
             startBtn.textContent = 'Complete Trip';
             startBtn.style.background = '#3b82f6';
@@ -261,8 +264,7 @@
 
         const trip = allTrips.find(t => t.id === selectedTripId);
         if (!trip) return;
-
-        const newStatus = trip.status === 'pending' ? 'active' : 'completed';
+        const newStatus = trip.view_status === 'pending' ? 'active' : 'completed';
         
         showToast(`Trip ${newStatus === 'active' ? 'started' : 'completed'} successfully!`, 'success');
         closeTripModal();
@@ -276,16 +278,32 @@
     async function loadTrips() {
         try {
             document.getElementById('tripsGrid').innerHTML = '<p style="text-align: center; padding: 2rem;">Loading trips...</p>';
-            
-            // Fetch trips assigned to this driver
-            const response = await fetch('../../../../handlers/trip_api.php?action=list');
+
+                    const response = await fetch('/handlers/driver_api.php?action=trips');
+            if (response.status === 401) {
+                window.location.href = '../login.html?error=unauth';
+                return;
+            }
             if (!response.ok) throw new Error('Failed to load trips');
-            
+
             const data = await response.json();
             if (data.success) {
-                allTrips = data.data || [];
+                const trips = (data.data || []).map(t => ({
+                    ...t,
+                    view_status: t.assignment_status || t.status || 'pending'
+                }));
+                allTrips = trips;
                 updateStats(allTrips);
                 renderTrips(allTrips);
+
+                // If arriving from dashboard with a specific trip id, open the modal once
+                if (autoTripId && !autoTripOpened) {
+                    const target = allTrips.find(t => Number(t.id) === autoTripId);
+                    if (target) {
+                        viewTripDetails(target.id);
+                        autoTripOpened = true;
+                    }
+                }
             } else {
                 showToast(data.message || 'Failed to load trips', 'error');
             }

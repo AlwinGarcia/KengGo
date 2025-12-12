@@ -22,7 +22,7 @@
     <!-- welcome card -->
     <section class="welcome-card" aria-label="Welcome">
         <div class="welcome-left">
-            <h2>Welcome Driver</h2>
+            <h2 id="driverWelcome">Welcome Driver</h2>
             <div class="card-info">
                 <span class="meta" id="driverCodeLabel">Driver Code</span>
                 <div class="id-value" id="driverCode">DRV-0000</div>
@@ -40,6 +40,17 @@
         <!-- cards grid -->
         <div class="trips-grid" id="tripsGrid"></div>
     </section>
+
+    <!-- Trip Detail Modal -->
+    <div class="modal-overlay" id="tripModal">
+        <div class="modal" style="max-width: 400px;">
+            <h3>Trip Details</h3>
+            <div id="tripDetails" style="text-align: left; font-size: 13px; line-height: 1.6;"></div>
+            <div class="modal-actions">
+                <button class="modal-actions btn-cancel" onclick="closeTripModal()">Close</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Toast notification -->
     <div class="toast" id="toast"></div>
@@ -91,6 +102,17 @@
         return num.toFixed(2);
     }
 
+    function formatTime(timeStr) {
+        if (!timeStr) return 'N/A';
+        const [hours, minutes] = String(timeStr).split(':');
+        const hour = parseInt(hours, 10);
+        const ampm = hour >= 12 ? 'PM' : 'AM';
+        const displayHour = hour % 12 || 12;
+        return `${displayHour}:${minutes} ${ampm}`;
+    }
+
+    const assignedTrips = [];
+
     function formatDate(dateStr) {
         if (!dateStr) return 'N/A';
         const date = new Date(dateStr);
@@ -137,32 +159,93 @@
             active: '#10b981',
             pending: '#f59e0b',
             completed: '#3b82f6',
-            cancelled: '#ef4444'
+            cancelled: '#ef4444',
+            en_route: '#3b82f6',
+            assigned: '#f59e0b'
         };
         return colors[status] || '#10b981';
     }
 
+    function getStatusText(status) {
+        const texts = {
+            en_route: '🟢 En Route',
+            assigned: '🟡 Assigned',
+            completed: '🔵 Completed',
+            cancelled: '🔴 Cancelled',
+            active: '🟢 Active',
+            pending: '🟡 Pending'
+        };
+        return texts[status] || status;
+    }
+
     function viewTrip(tripId) {
-        window.location.href = `trip_detail.html?id=${tripId}`;
+        const trip = assignedTrips.find(t => Number(t.id) === Number(tripId));
+        if (!trip) return;
+        viewTripDetails(trip);
+    }
+
+    function viewTripDetails(trip) {
+        const details = `
+            <div style="margin-bottom: 12px;">
+                <strong style="color: var(--dark);">Shuttle:</strong> ${escapeHtml(trip.shuttle_number || 'N/A')}<br>
+                <strong style="color: var(--dark);">Status:</strong> ${getStatusText(trip.status)}<br>
+                <strong style="color: var(--dark);">Date:</strong> ${formatDate(trip.trip_date)}<br>
+                <strong style="color: var(--dark);">Departure:</strong> ${formatTime(trip.depart_time)}<br>
+                <strong style="color: var(--dark);">Arrival:</strong> ${formatTime(trip.arrive_time)}<br>
+                <strong style="color: var(--dark);">From:</strong> ${escapeHtml(trip.from_address || 'N/A')}<br>
+                <strong style="color: var(--dark);">To:</strong> ${escapeHtml(trip.to_address || 'N/A')}<br>
+                <strong style="color: var(--dark);">Price:</strong> ₱${formatPrice(trip.price)}<br>
+                <strong style="color: var(--dark);">Seats:</strong> ${trip.seats_available || 0}<br>
+                ${trip.notes ? `<strong style="color: var(--dark);">Notes:</strong> ${escapeHtml(trip.notes)}` : ''}
+            </div>
+        `;
+
+        document.getElementById('tripDetails').innerHTML = details;
+        document.getElementById('tripModal').classList.add('show');
+    }
+
+    function closeTripModal() {
+        document.getElementById('tripModal').classList.remove('show');
     }
 
     async function loadDashboard() {
+        const tripsGrid = document.getElementById('tripsGrid');
+        tripsGrid.innerHTML = '<p style="text-align:center;padding:2rem;color:#666;">Loading trips...</p>';
+
         try {
-            // In a real app, fetch driver data from session/API
-            // For now, display welcome message
-            document.getElementById('driverName').textContent = 'Driver';
-            document.getElementById('driverCode').textContent = 'DRV-1001';
-            
+            // Load driver profile
+            const profileRes = await fetch('/handlers/driver_api.php?action=profile');
+            if (profileRes.status === 401) {
+                window.location.href = '../login.html?error=unauth';
+                return;
+            }
+            const profileData = await profileRes.json();
+            if (profileData.success) {
+                const d = profileData.data;
+                document.getElementById('driverName').textContent = d.name || 'Driver';
+                    document.getElementById('driverWelcome').textContent = `Welcome ${d.name || 'Driver'}`;
+                document.getElementById('driverCode').textContent = d.driver_code || '';
+            }
+
             // Load assigned trips
-            const response = await fetch('../../../../handlers/driver_api.php?action=list');
-            if (!response.ok) throw new Error('Failed to load trips');
-            
-            const data = await response.json();
-            if (data.success) {
-                renderTrips(data.data.slice(0, 5) || []);
+            const tripsRes = await fetch('/handlers/driver_api.php?action=assigned');
+            if (tripsRes.status === 401) {
+                window.location.href = '../login.html?error=unauth';
+                return;
+            }
+            if (!tripsRes.ok) throw new Error('Failed to load trips');
+
+            const tripsJson = await tripsRes.json();
+            if (tripsJson.success) {
+                const trips = tripsJson.data || [];
+                assignedTrips.splice(0, assignedTrips.length, ...trips);
+                renderTrips(trips);
+            } else {
+                tripsGrid.innerHTML = '<p style="text-align:center;padding:2rem;color:#666;">No assigned trips.</p>';
             }
         } catch (error) {
             console.error(error);
+            tripsGrid.innerHTML = '<p style="text-align:center;padding:2rem;color:#c00;">Could not load trips.</p>';
             showToast('Could not load data', 'error');
         }
     }
