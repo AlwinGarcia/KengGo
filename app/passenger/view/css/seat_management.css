@@ -79,6 +79,19 @@ body {
     border: 2px solid #aaa;
     cursor: not-allowed;
 }
+/* NEW: Booked seat (others → red) */
+.seat-btn.booked {
+    background-color: #ff4d4d;
+    color: #fff;
+    border: 2px solid #b71c1c;
+    cursor: not-allowed;
+}
+/* NEW: Passenger's own seat (green) */
+.seat-btn.own {
+    background-color: #4CAF50;
+    color: #fff;
+    border: 2px solid #2e7d32;
+}
 .seat-actions {
     display: flex;
     justify-content: center;

@@ -2,6 +2,7 @@
 $passengerName = $_SESSION['passenger_name'] ?? 'Guest';
 $passengerId   = $_SESSION['passenger_id'] ?? 'N/A';
 $seats         = $seats ?? []; // booked seats only
+$ownSeat       = $ownSeat ?? null; // your booked seat
 $message       = $message ?? null;
 ?>
 
@@ -11,26 +12,6 @@ $message       = $message ?? null;
     <meta charset="UTF-8">
     <title>Seat Management</title>
     <link rel="stylesheet" href="/KengGo/app/passenger/view/css/seat_management.css">
-    <style>
-        .seat-btn {
-            width: 50px;
-            height: 50px;
-            margin: 5px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-            background-color: #f0f0f0; /* default available */
-            cursor: pointer;
-        }
-        .seat-btn.selected {
-            background-color: #4CAF50; /* green for selected */
-            color: #fff;
-        }
-        .seat-btn.booked {
-            background-color: #ff4d4d; /* red for booked */
-            color: #fff;
-            cursor: not-allowed;
-        }
-    </style>
 </head>
 <body>
     <div class="seat-container">
@@ -51,11 +32,24 @@ $message       = $message ?? null;
 
         <div class="seat-grid">
             <?php for ($i = 1; $i <= ($capacity ?? 12); $i++): ?>
-                <?php $isBooked = in_array($i, $seats); ?>
-                <button class="seat-btn <?= $isBooked ? 'booked' : '' ?>"
+                <?php
+                    $isBooked = in_array($i, $seats);
+                    $isOwn    = ($ownSeat == $i);
+                    $classes  = "seat-btn";
+
+                    if ($isOwn) {
+                        $classes .= " own";
+                    } elseif ($isBooked) {
+                        $classes .= " booked";
+                    }
+                ?>
+                <button class="<?= $classes ?>"
                         onclick="selectSeat(this)"
-                        <?= $isBooked ? 'disabled' : '' ?>>
+                        <?= ($isBooked && !$isOwn) ? 'disabled' : '' ?>>
                     <?= $i ?>
+                    <?php if ($isOwn): ?>
+                        <div style="font-size:0.7em;">Yours</div>
+                    <?php endif; ?>
                 </button>
             <?php endfor; ?>
         </div>
@@ -74,7 +68,7 @@ $message       = $message ?? null;
             if (!btn.disabled) {
                 document.querySelectorAll('.seat-btn').forEach(b => b.classList.remove('selected'));
                 btn.classList.add('selected');
-                document.getElementById('selectedSeat').value = btn.textContent;
+                document.getElementById('selectedSeat').value = btn.textContent.trim();
             }
         }
     </script>
