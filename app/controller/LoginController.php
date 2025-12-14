@@ -17,7 +17,7 @@ class LoginController {
 
            $user = $this->model->findByEmail($email);
 
-           if ($user && $user['password'] === $password) {
+           if ($user && password_verify($password, $user['password'])) {
                $_SESSION['passenger_id']   = $user['id'];
                $_SESSION['passenger_name'] = $user['name'];
                $_SESSION['role']           = 'passenger'; // ✅ required for past trips

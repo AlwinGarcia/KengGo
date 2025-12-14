@@ -14,8 +14,9 @@ class Passenger {
     }
 
     public function register($name, $email, $password) {
+        $hash = password_hash($password, PASSWORD_BCRYPT);
         $stmt = $this->conn->prepare("INSERT INTO passengers (name, email, password) VALUES (?, ?, ?)");
-        $stmt->bind_param("sss", $name, $email, $password);
+        $stmt->bind_param("sss", $name, $email, $hash);
         return $stmt->execute();
     }
 }
