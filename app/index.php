@@ -43,6 +43,10 @@ switch ($page) {
         $bookedTripsController->showBookedTrips();
         break;
 
+    case 'cancel-booking':   // ✅ new route for cancelling trips
+        $bookedTripsController->cancelTrip();
+        break;
+
     case 'trips':
         $tripsController->showPastTrips();
         break;

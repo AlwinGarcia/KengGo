@@ -10,6 +10,7 @@ $totalTrips    = $totalTrips ?? 0;
     <meta charset="UTF-8">
     <title>Booked Trips</title>
     <link rel="stylesheet" href="/KengGo/app/passenger/view/css/dashboard.css">
+    <link rel="stylesheet" href="/KengGo/app/passenger/view/css/booked_trips.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -18,6 +19,14 @@ $totalTrips    = $totalTrips ?? 0;
             <span class="user">Booked Trips for <?= htmlspecialchars($passengerName) ?></span>
             <span class="notif"><i class="fa-regular fa-bell"></i></span>
         </div>
+
+        <!-- ✅ Show feedback messages -->
+        <?php if (!empty($_SESSION['trip_message'])): ?>
+            <p style="color: green; text-align:center;">
+                <?= htmlspecialchars($_SESSION['trip_message']) ?>
+            </p>
+            <?php unset($_SESSION['trip_message']); ?>
+        <?php endif; ?>
 
         <div class="trips-section">
             <div class="trips-title">
@@ -38,6 +47,16 @@ $totalTrips    = $totalTrips ?? 0;
                             <span class="trip-fare">Fare: ₱<?= htmlspecialchars($trip['price']) ?></span>
                             <span class="trip-seat">Seat #: <?= htmlspecialchars($trip['seat_number']) ?></span>
                             <span class="trip-status">Status: <?= htmlspecialchars($trip['status']) ?></span>
+
+                            <!-- Cancel button -->
+                            <?php if ($trip['status'] === 'booked'): ?>
+                                <form method="POST" action="index.php?page=cancel-booking" style="margin-top:8px;">
+                                    <input type="hidden" name="booking_id" value="<?= $trip['booking_id'] ?>">
+                                    <button type="submit" class="btn-danger">
+                                        <i class="fa-solid fa-ban"></i> Cancel
+                                    </button>
+                                </form>
+                            <?php endif; ?>
                         </div>
                     <?php endforeach; ?>
                 <?php else: ?>
@@ -46,7 +65,7 @@ $totalTrips    = $totalTrips ?? 0;
             </div>
         </div>
 
-        <!-- ✅ Toggle Buttons -->
+        <!--  Toggle Buttons -->
         <div class="booked-trips-btn">
             <?php if (!$showAll && $totalTrips >= 7): ?>
                 <a href="index.php?page=booked-trips&all=1" class="btn-primary">

@@ -31,4 +31,26 @@ class BookedTripsController {
 
         include __DIR__ . '/../view/php/booked_trips.php';
     }
+
+    public function cancelTrip() {
+        if (!isset($_SESSION['passenger_id'])) {
+            header("Location: index.php?page=login");
+            exit();
+        }
+
+        $passengerId = $_SESSION['passenger_id'];
+        $bookingId   = $_POST['booking_id'] ?? null;
+
+        if ($bookingId) {
+            $result = $this->model->cancelBooking($bookingId, $passengerId);
+            if ($result) {
+                $_SESSION['trip_message'] = "Booking cancelled successfully.";
+            } else {
+                $_SESSION['trip_message'] = "Unable to cancel booking.";
+            }
+        }
+
+        header("Location: index.php?page=booked-trips");
+        exit();
+    }
 }

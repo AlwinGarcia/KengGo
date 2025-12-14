@@ -72,39 +72,12 @@ class BookedTripsModel {
 
     // Insert a booking
     public function insertBooking($passengerId, $shuttleId, $seatNumber) {
-        // Step 1: Check if a booking already exists for this passenger and shuttle
-        $checkSql = "SELECT id, status FROM bookings
-                     WHERE passenger_id = ? AND shuttle_id = ?";
-        $checkStmt = $this->conn->prepare($checkSql);
-        $checkStmt->bind_param('ii', $passengerId, $shuttleId);
-        $checkStmt->execute();
-        $checkResult = $checkStmt->get_result();
-
-        if ($checkResult->num_rows > 0) {
-            $existing = $checkResult->fetch_assoc();
-
-            if ($existing['status'] === 'booked') {
-                // Already booked — cannot rebook
-                return "duplicate";
-            }
-
-            // Step 2: Reuse cancelled/completed booking
-            $updateSql = "UPDATE bookings
-                          SET seat_number = ?, status = 'booked', booked_at = NOW()
-                          WHERE id = ?";
-            $updateStmt = $this->conn->prepare($updateSql);
-            $updateStmt->bind_param('ii', $seatNumber, $existing['id']);
-            return $updateStmt->execute() ? "rebooked" : "error";
-        }
-
-        // Step 3: No existing booking — insert new
         $sql = "INSERT INTO bookings (passenger_id, shuttle_id, seat_number, status, booked_at)
                 VALUES (?, ?, ?, 'booked', NOW())";
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param('iii', $passengerId, $shuttleId, $seatNumber);
         return $stmt->execute() ? "success" : "error";
     }
-
 
     // Get all booked seat numbers for a shuttle
     public function getBookedSeats($shuttleId) {
@@ -121,14 +94,14 @@ class BookedTripsModel {
         }
         return $seats;
     }
-public function getShuttleCapacity($shuttleId) {
-    $sql = "SELECT capacity FROM shuttles WHERE id = ?";
-    $stmt = $this->conn->prepare($sql);
-    $stmt->bind_param('i', $shuttleId);
-    $stmt->execute();
-    $res = $stmt->get_result();
-    $row = $res->fetch_assoc();
-    return $row['capacity'] ?? 12; // fallback to 12 if not found
-}
 
+    public function getShuttleCapacity($shuttleId) {
+        $sql = "SELECT capacity FROM shuttles WHERE id = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param('i', $shuttleId);
+        $stmt->execute();
+        $res = $stmt->get_result();
+        $row = $res->fetch_assoc();
+        return $row['capacity'] ?? 12; // fallback to 12 if not found
+    }
 }

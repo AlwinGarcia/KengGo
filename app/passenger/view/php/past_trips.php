@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>Past Trips</title>
     <link rel="stylesheet" href="/KengGo/app/passenger/view/css/dashboard.css">
+
+    <link rel="stylesheet" href="/KengGo/app/passenger/view/css/past_trips.css"> <!-- ✅ new file -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -55,11 +57,7 @@
         <a href="index.php?page=dashboard" class="btn-primary">
             <i class="fa-solid fa-house"></i> Back to Dashboard
         </a>
-
     </div>
-
-    <!-- Bottom Navigation -->
-
 </div>
 </body>
 </html>

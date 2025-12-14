@@ -1,0 +1,86 @@
+/* past_trips.css */
+
+/* Container */
+.dashboard-container {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #ffe082; /* or #ffe082 if you want the yellow background */
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+/* Section title */
+.trips-title {
+    font-size: 1.2em;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: #2d4ed6;
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 6px;
+}
+
+/* Table styling */
+.trip-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.trip-table thead {
+    background: #2d4ed6;
+    color: #fff;
+}
+
+.trip-table th,
+.trip-table td {
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 0.95em;
+}
+
+.trip-table th {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.trip-table tbody tr:nth-child(even) {
+    background: #f9f9f9;
+}
+
+.trip-table tbody tr:hover {
+    background: #e0c366;
+    color: #222;
+    transition: background 0.2s ease;
+}
+
+/* No trips message */
+.no-trips {
+    text-align: center;
+    font-size: 1.1em;
+    color: #777;
+    margin-top: 20px;
+}
+
+/* Buttons */
+.dashboard-buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+.dashboard-buttons .btn-primary {
+    background: #2d4ed6;
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background 0.2s ease;
+}
+.dashboard-buttons .btn-primary:hover {
+    background: #1a36a8;
+}
